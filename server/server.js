@@ -56,7 +56,8 @@ app.use('/api/ai', authenticateToken, aiRoutes);
 
 // Serve React frontend in production
 if (process.env.NODE_ENV === 'production') {
-    const clientBuildPath = path.join(__dirname, '../client/dist');
+    const clientBuildPath = path.resolve(__dirname, '..', 'client', 'dist');
+    console.log('📁 Serving client from:', clientBuildPath);
     
     // Serve static files
     app.use(express.static(clientBuildPath));
