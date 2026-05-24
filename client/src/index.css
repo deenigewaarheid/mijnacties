@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ── Celebration toast animation ────────────────────────────────────────────── */
+@keyframes slideUp {
+  from { transform: translateY(100px); opacity: 0; }
+  to   { transform: translateY(0);     opacity: 1; }
+}
+
+.animate-slideUp {
+  animation: slideUp 0.4s ease-out;
+}
+
+/* ── Task completion animation ───────────────────────────────────────────────── */
+@keyframes slideOut {
+  to { transform: translateX(20px); opacity: 0; }
+}
+
+.task-completing {
+  animation: slideOut 0.4s ease-out forwards;
+}
+
+/* ── Focus mode ─────────────────────────────────────────────────────────────── */
+body.focus-mode aside                { display: none !important; }
+body.focus-mode .stat-card           { display: none !important; }
+body.focus-mode .upcoming-section    { display: none !important; }
+body.focus-mode .project-section     { display: none !important; }
+
+/* ── Print-only elements: hidden on screen, shown when printing ─────────────── */
+.print-only       { display: none; }
+.no-print-screen  { display: none; }
+
+/* ── Print styles ───────────────────────────────────────────────────────────── */
+@media print {
+  [data-noprint], aside, .no-print { display: none !important; }
+  html, body, #root { background: white !important; }
+  body   { margin: 0; padding: 0; }
+  main   { padding: 0 !important; overflow: visible !important; height: auto !important; }
+  @page  { size: A4 portrait; margin: 14mm 18mm; }
+  .print-only, .no-print-screen { display: block !important; }
+  .page-1  { page-break-after: always;  break-after:  page; }
+  .page-2  { page-break-before: always; break-before: page; }
+  .task    { page-break-inside: avoid;  break-inside: avoid; }
+  .section { page-break-inside: avoid;  break-inside: avoid; }
+  h2       { page-break-after: avoid;   break-after:  avoid; }
+  *        { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+}
