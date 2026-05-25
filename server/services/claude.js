@@ -28,10 +28,12 @@ ${emailBody}
 
 REGELS:
 - Elke taak is één concreet actiepunt, geformuleerd als opdracht (begin met een werkwoord)
+- Ook "lezen", "bekijken", "doorlezen" zijn acties — als de mail zegt "lees dit" is dat een taak
 - "description": schrijf een korte samenvatting (1-2 zinnen) van de relevante context uit de tekst voor deze taak
 - "subtasks": ALLEEN invullen als in de tekst letterlijk meerdere losse stappen of deeltaken worden genoemd. Verzin GEEN subtaken zelf.
 - Geef een realistische deadline als die in de tekst staat, anders null
 - Prioriteit: "high" als urgent/vandaag/morgen, "low" als geen haast, anders "mid"
+- Bij een FW: (doorgestuurde mail) extraheer ook de actie die het doorsturen impliceert
 ${isDocument ? '- Extraheer ALLE taken en opdrachten uit het document, ook als het er veel zijn' : ''}
 
 Geef ALLEEN een JSON array terug, zonder uitleg:
@@ -83,11 +85,21 @@ async function detectCategory(emailBody, emailSubject, emailFrom) {
     try {
         const subjectLower = emailSubject.toLowerCase();
         const bodyLower = emailBody.toLowerCase();
+        const fromLower = (emailFrom || '').toLowerCase();
+
+        // Non-personal domains = werk
+        const personalDomains = ['gmail.com', 'hotmail.com', 'outlook.com', 'yahoo.com', 'icloud.com', 'live.nl', 'ziggo.nl', 'kpnmail.nl'];
+        const domain = fromLower.split('@')[1] || '';
+        if (domain && !personalDomains.some(d => domain.endsWith(d))) {
+            return 'werk';
+        }
 
         const werkKeywords = [
             'vergadering', 'budget', 'collega', 'directie', 'team',
             'school', 'leerling', 'ouder', 'rapport', 'cijfer', 'toets',
-            'huiswerk', 'klas', 'les', 'docent', 'leraar', 'rooster'
+            'huiswerk', 'klas', 'les', 'docent', 'leraar', 'rooster',
+            'mededeling', 'mededelingen', 'asg', 'sectie', 'mentor',
+            'notulen', 'agenda', 'afspraak', 'bijeenkomst', 'aanwezig',
         ];
 
         if (werkKeywords.some(kw => bodyLower.includes(kw) || subjectLower.includes(kw))) {
