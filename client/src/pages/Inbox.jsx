@@ -304,6 +304,134 @@ function AnalyzePanel({ onClose, onDone }) {
   )
 }
 
+// ─── Mail detail modal ────────────────────────────────────────────────────────
+
+function MailDetailModal({ mail, onClose, onTasksApproved }) {
+  const [analyzing, setAnalyzing] = useState(false)
+  const [tasks, setTasks]         = useState(null)
+  const [error, setError]         = useState('')
+
+  async function handleAnalyze() {
+    setAnalyzing(true); setError('')
+    try {
+      const { data } = await api.post(`/mails/${mail.id}/analyze`)
+      let taskId = 0
+      setTasks(data.tasks.map(t => ({
+        ...t, _id: taskId++,
+        selected: t.bestemming !== 'weggooien',
+        title: t.gtd?.verbeterd || t.title,
+        originalTitle: t.gtd?.origineel,
+      })))
+    } catch {
+      setError('Analyse mislukt, probeer opnieuw')
+    } finally {
+      setAnalyzing(false)
+    }
+  }
+
+  async function handleApprove() {
+    try {
+      await api.post(`/mails/${mail.id}/approve`, { tasks: tasks.filter(t => t.selected) })
+      onTasksApproved()
+    } catch {
+      setError('Opslaan mislukt')
+    }
+  }
+
+  function toggleTask(id) { setTasks(ts => ts.map(t => t._id === id ? { ...t, selected: !t.selected } : t)) }
+  function updateTask(id, field, val) { setTasks(ts => ts.map(t => t._id === id ? { ...t, [field]: val } : t)) }
+  function removeTask(id) { setTasks(ts => ts.filter(t => t._id !== id)) }
+
+  return (
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4" onClick={e => e.target === e.currentTarget && onClose()}>
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[85vh] flex flex-col">
+        {/* Header */}
+        <div className="flex items-start justify-between p-6 border-b border-gray-100">
+          <div>
+            <h2 className="font-semibold text-gray-900">{mail.subject}</h2>
+            <p className="text-sm text-blue-600 mt-0.5">{mail.from_email}</p>
+          </div>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600"><X size={20} /></button>
+        </div>
+
+        {/* Badges */}
+        <div className="flex gap-2 px-6 py-3 border-b border-gray-100">
+          <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${PRIORITY_COLORS[mail.priority] || PRIORITY_COLORS.mid}`}>
+            {PRIORITY_LABELS[mail.priority]}
+          </span>
+          <span className={`text-xs px-2 py-0.5 rounded-full ${CATEGORY_COLORS[mail.category] || 'bg-gray-100 text-gray-500'}`}>
+            {mail.category}
+          </span>
+        </div>
+
+        <div className="flex-1 overflow-auto p-6 space-y-4">
+          {/* Mail body */}
+          {!tasks && (
+            <pre className="text-sm text-gray-700 whitespace-pre-wrap font-sans">{mail.body}</pre>
+          )}
+
+          {/* Tasks */}
+          {tasks && (
+            <div className="space-y-2">
+              <p className="text-sm text-gray-500">{tasks.filter(t => t.selected).length} taken geselecteerd</p>
+              {tasks.length === 0 && <p className="text-sm text-gray-400">Geen actiepunten gevonden in deze mail.</p>}
+              {tasks.map(task => (
+                <div key={task._id} className={`border rounded-xl p-3 transition-colors ${
+                  task.bestemming === 'weggooien' ? 'border-red-100 bg-red-50 opacity-60' :
+                  task.selected ? 'border-blue-200 bg-blue-50' : 'border-gray-200 bg-gray-50 opacity-50'
+                }`}>
+                  <div className="flex items-start gap-2">
+                    <input type="checkbox" checked={task.selected} onChange={() => toggleTask(task._id)} className="mt-1 accent-blue-700" />
+                    <div className="flex-1 min-w-0">
+                      <input type="text" value={task.title} onChange={e => updateTask(task._id, 'title', e.target.value)}
+                        className="w-full font-medium text-gray-900 bg-transparent border-b border-transparent hover:border-blue-300 focus:border-blue-500 focus:outline-none text-sm pb-0.5" />
+                      {task.originalTitle && task.originalTitle !== task.title && (
+                        <p className="text-xs text-gray-400 mt-0.5 truncate">Origineel: {task.originalTitle}</p>
+                      )}
+                      {task.description && <p className="text-xs text-gray-500 mt-1">{task.description}</p>}
+                      <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
+                        {task.bestemming && task.bestemming !== 'actie' && (
+                          <span className={`text-xs px-1.5 py-0.5 rounded-full font-medium ${BESTEMMING_COLORS[task.bestemming] || 'bg-gray-100 text-gray-600'}`}>
+                            {BESTEMMING_LABELS[task.bestemming] || task.bestemming}
+                          </span>
+                        )}
+                        <span className={`text-xs px-1.5 py-0.5 rounded-full font-medium ${PRIORITY_COLORS[task.priority] || PRIORITY_COLORS.mid}`}>
+                          {PRIORITY_LABELS[task.priority] || 'Gemiddeld'}
+                        </span>
+                      </div>
+                    </div>
+                    <button onClick={() => removeTask(task._id)} className="text-gray-300 hover:text-red-400 flex-shrink-0"><Trash2 size={13} /></button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {error && <p className="text-red-500 text-sm">{error}</p>}
+        </div>
+
+        {/* Footer */}
+        <div className="px-6 py-4 border-t border-gray-100 flex gap-3">
+          <button onClick={onClose} className="flex-1 border border-gray-200 text-gray-600 hover:bg-gray-50 font-medium py-2.5 rounded-lg text-sm transition-colors">
+            Sluiten
+          </button>
+          {!tasks ? (
+            <button onClick={handleAnalyze} disabled={analyzing}
+              className="flex-1 bg-blue-800 hover:bg-blue-900 disabled:opacity-50 text-white font-medium py-2.5 rounded-lg text-sm transition-colors flex items-center justify-center gap-2">
+              {analyzing ? <><Loader2 size={14} className="animate-spin" />Analyseren...</> : <><ArrowRight size={14} />Taken extraheren</>}
+            </button>
+          ) : (
+            <button onClick={handleApprove} disabled={!tasks.some(t => t.selected)}
+              className="flex-1 bg-blue-800 hover:bg-blue-900 disabled:opacity-50 text-white font-medium py-2.5 rounded-lg text-sm transition-colors flex items-center justify-center gap-2">
+              <CheckCircle2 size={14} />Opslaan in taken
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // ─── Inbox ────────────────────────────────────────────────────────────────────
 
 export default function Inbox() {
@@ -403,28 +531,11 @@ export default function Inbox() {
 
       {/* Mail detail modal */}
       {selected && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4" onClick={e => e.target === e.currentTarget && setSelected(null)}>
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[80vh] flex flex-col">
-            <div className="flex items-start justify-between p-6 border-b border-gray-100">
-              <div>
-                <h2 className="font-semibold text-gray-900">{selected.subject}</h2>
-                <p className="text-sm text-blue-600 mt-0.5">{selected.from_email}</p>
-              </div>
-              <button onClick={() => setSelected(null)} className="text-gray-400 hover:text-gray-600"><X size={20} /></button>
-            </div>
-            <div className="flex gap-2 px-6 py-3 border-b border-gray-100">
-              <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${PRIORITY_COLORS[selected.priority]}`}>
-                {PRIORITY_LABELS[selected.priority]}
-              </span>
-              <span className={`text-xs px-2 py-0.5 rounded-full ${CATEGORY_COLORS[selected.category] || 'bg-gray-100 text-gray-500'}`}>
-                {selected.category}
-              </span>
-            </div>
-            <div className="p-6 overflow-auto flex-1">
-              <pre className="text-sm text-gray-700 whitespace-pre-wrap font-sans">{selected.body}</pre>
-            </div>
-          </div>
-        </div>
+        <MailDetailModal
+          mail={selected}
+          onClose={() => setSelected(null)}
+          onTasksApproved={() => { setSelected(null); fetchMails(); refreshBadges(); setSuccessMsg('Taken opgeslagen!'); setTimeout(() => setSuccessMsg(''), 3000) }}
+        />
       )}
 
       {/* Analyze slide-over */}

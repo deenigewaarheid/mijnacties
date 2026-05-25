@@ -177,6 +177,38 @@ router.post('/analyze', async (req, res) => {
 });
 
 /**
+ * POST /api/mails/:id/analyze
+ * Re-analyze an existing mail and return tasks (no new mail created)
+ */
+router.post('/:id/analyze', async (req, res) => {
+    try {
+        const userId = req.userId;
+        const mailId = req.params.id;
+
+        const result = await query(
+            'SELECT * FROM mails WHERE id = $1 AND user_id = $2',
+            [mailId, userId]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Mail niet gevonden' });
+        }
+
+        const mail = result.rows[0];
+        const analysis = await analyzeEmail({
+            body: mail.body,
+            subject: mail.subject,
+            from: mail.from_email,
+        });
+
+        res.json({ tasks: analysis.tasks, mail });
+    } catch (error) {
+        console.error('Re-analyze mail error:', error);
+        res.status(500).json({ error: 'Analyse mislukt' });
+    }
+});
+
+/**
  * POST /api/mails/:id/approve
  * Approve mail and create tasks
  */
