@@ -7,6 +7,7 @@ const path = require('path');
 require('dotenv').config();
 
 const { pool, query } = require('./database/db');
+const { runMigrations } = require('./database/migrate');
 const { authenticateToken } = require('./middleware/auth');
 const { pollGmail } = require('./services/gmail');
 const { analyzeEmail } = require('./services/claude');
@@ -157,6 +158,9 @@ async function startServer() {
         // Test database connection
         await pool.query('SELECT NOW()');
         console.log('✓ Database connected');
+
+        // Run migrations (safe, idempotent)
+        await runMigrations();
 
         // Start Gmail polling
         startGmailPolling();

@@ -61,6 +61,12 @@ CREATE TABLE IF NOT EXISTS subtasks (
     text TEXT NOT NULL,
     completed BOOLEAN DEFAULT FALSE,
     position INTEGER DEFAULT 0,
+    deadline TIMESTAMP,
+    priority VARCHAR(20),
+    category VARCHAR(50),
+    context VARCHAR(50),
+    energie VARCHAR(20),
+    tijd_minuten INTEGER,
     created_at TIMESTAMP DEFAULT NOW()
 );
 
