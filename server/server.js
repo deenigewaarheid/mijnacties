@@ -17,7 +17,6 @@ const tasksRoutes = require('./routes/tasks');
 const goalsRoutes = require('./routes/goals');
 const dagplannerRoutes = require('./routes/dagplanner');
 const aiRoutes         = require('./routes/ai');
-const setupRoutes = require('./routes/setup');
 
 // Initialize Express
 const app = express();
@@ -54,7 +53,6 @@ app.use('/api/tasks', authenticateToken, tasksRoutes);
 app.use('/api/goals', authenticateToken, goalsRoutes);
 app.use('/api/dagplanner', authenticateToken, dagplannerRoutes);
 app.use('/api/ai', authenticateToken, aiRoutes);
-app.use('/api/setup', setupRoutes);
 
 // Serve React frontend in production
 if (process.env.NODE_ENV === 'production') {
