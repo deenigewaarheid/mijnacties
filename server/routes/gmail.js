@@ -1,4 +1,5 @@
 const express = require('express');
+// Force redeploy - versie 2.0
 const { google } = require('googleapis');
 const jwt = require('jsonwebtoken');
 const pool = require('../database/db');
