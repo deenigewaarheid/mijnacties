@@ -353,10 +353,29 @@ router.post('/sync', async (req, res) => {
                 ]
             );
 
-            if (analysis.needsReply && result.rows[0]) {
+            const mailId = result.rows[0].id;
+            const toSave = analysis.tasks.filter(t => t.bestemming !== 'weggooien' && t.title);
+            for (const task of toSave) {
+                const title = task.gtd?.verbeterd || task.title;
+                const taskResult = await query(
+                    `INSERT INTO tasks (user_id, mail_id, title, description, deadline, priority, category, context, energie, tijd_minuten, bestemming)
+                     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) RETURNING id`,
+                    [userId, mailId, title, task.description || null, task.deadline || null,
+                     task.priority || 'mid', task.category || 'werk', task.context || null,
+                     task.energie || null, task.tijd_minuten || null, task.bestemming || 'actie']
+                );
+                if (task.subtasks?.length > 0) {
+                    for (let i = 0; i < task.subtasks.length; i++) {
+                        await query('INSERT INTO subtasks (task_id, text, position) VALUES ($1,$2,$3)',
+                            [taskResult.rows[0].id, task.subtasks[i], i]);
+                    }
+                }
+            }
+
+            if (analysis.needsReply) {
                 await query(
                     `INSERT INTO mail_drafts (user_id, mail_id, questions) VALUES ($1, $2, $3)`,
-                    [userId, result.rows[0].id, JSON.stringify(analysis.customQuestions || [])]
+                    [userId, mailId, JSON.stringify(analysis.customQuestions || [])]
                 );
             }
 

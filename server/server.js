@@ -91,6 +91,27 @@ app.use((err, req, res, next) => {
 // Gmail polling interval (every 5 minutes)
 let gmailPollingInterval = null;
 
+async function saveTasksForMail(userId, mailId, tasks) {
+    const toSave = tasks.filter(t => t.bestemming !== 'weggooien' && t.title);
+    for (const task of toSave) {
+        const title = task.gtd?.verbeterd || task.title;
+        const taskResult = await query(
+            `INSERT INTO tasks (user_id, mail_id, title, description, deadline, priority, category, context, energie, tijd_minuten, bestemming)
+             VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) RETURNING id`,
+            [userId, mailId, title, task.description || null, task.deadline || null,
+             task.priority || 'mid', task.category || 'werk', task.context || null,
+             task.energie || null, task.tijd_minuten || null, task.bestemming || 'actie']
+        );
+        if (task.subtasks?.length > 0) {
+            for (let i = 0; i < task.subtasks.length; i++) {
+                await query('INSERT INTO subtasks (task_id, text, position) VALUES ($1,$2,$3)',
+                    [taskResult.rows[0].id, task.subtasks[i], i]);
+            }
+        }
+    }
+    return toSave.length;
+}
+
 async function syncGmailForUser(userId) {
     const newMessages = await pollGmail(userId);
     if (newMessages.length === 0) return;
@@ -100,29 +121,33 @@ async function syncGmailForUser(userId) {
     for (const message of newMessages) {
         try {
             const analysis = await analyzeEmail(message);
+            const status = analysis.tasks.length > 0 ? 'approved' : 'unread';
             const result = await query(
                 `INSERT INTO mails
                  (user_id, gmail_message_id, from_email, from_name, subject, body,
                   category, priority, status, needs_reply, display_subject, received_at)
-                 VALUES ($1,$2,$3,$4,$5,$6,$7,$8,'unread',$9,$10,$11)
+                 VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)
                  RETURNING id`,
                 [
                     userId, message.id, message.from, message.fromName,
                     message.subject, message.body,
-                    analysis.category, analysis.priority,
+                    analysis.category, analysis.priority, status,
                     analysis.needsReply, analysis.displaySubject,
                     message.internalDate,
                 ]
             );
 
-            if (analysis.needsReply && result.rows[0]) {
+            const mailId = result.rows[0].id;
+            const taskCount = await saveTasksForMail(userId, mailId, analysis.tasks);
+
+            if (analysis.needsReply) {
                 await query(
-                    `INSERT INTO mail_drafts (user_id, mail_id, questions) VALUES ($1, $2, $3)`,
-                    [userId, result.rows[0].id, JSON.stringify(analysis.customQuestions || [])]
+                    `INSERT INTO mail_drafts (user_id, mail_id, questions) VALUES ($1,$2,$3)`,
+                    [userId, mailId, JSON.stringify(analysis.customQuestions || [])]
                 );
             }
 
-            console.log(`✓ Saved: ${message.subject} (needsReply=${analysis.needsReply})`);
+            console.log(`✓ Saved: ${message.subject} | ${taskCount} taken | needsReply=${analysis.needsReply}`);
         } catch (err) {
             console.error(`Error processing message ${message.id}:`, err.message);
         }
