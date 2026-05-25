@@ -24,6 +24,8 @@ CREATE TABLE IF NOT EXISTS mails (
     category VARCHAR(50) DEFAULT 'uncategorized',
     priority VARCHAR(20) DEFAULT 'mid',
     status VARCHAR(20) DEFAULT 'unread',
+    needs_reply BOOLEAN DEFAULT FALSE,
+    display_subject TEXT,
     created_at TIMESTAMP DEFAULT NOW()
 );
 

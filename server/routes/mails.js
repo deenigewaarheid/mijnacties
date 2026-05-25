@@ -147,19 +147,27 @@ router.post('/analyze', async (req, res) => {
 
         // Save mail
         const mailResult = await query(
-            `INSERT INTO mails (user_id, from_email, subject, body, category, priority, status, received_at)
-             VALUES ($1, $2, $3, $4, $5, $6, 'unread', NOW())
+            `INSERT INTO mails (user_id, from_email, subject, body, category, priority, status, needs_reply, display_subject, received_at)
+             VALUES ($1, $2, $3, $4, $5, $6, 'unread', $7, $8, NOW())
              RETURNING *`,
-            [userId, from, subject, body, analysis.category, analysis.priority]
+            [userId, from, subject, body, analysis.category, analysis.priority, analysis.needsReply, analysis.displaySubject]
         );
 
         const mail = mailResult.rows[0];
+
+        if (analysis.needsReply) {
+            await query(
+                `INSERT INTO mail_drafts (user_id, mail_id, questions) VALUES ($1, $2, $3)`,
+                [userId, mail.id, JSON.stringify(analysis.customQuestions || [])]
+            );
+        }
 
         res.json({
             mail,
             tasks: analysis.tasks,
             category: analysis.category,
-            priority: analysis.priority
+            priority: analysis.priority,
+            needsReply: analysis.needsReply,
         });
 
     } catch (error) {
@@ -293,10 +301,10 @@ router.post('/sync', async (req, res) => {
 
             // Save to database
             const result = await query(
-                `INSERT INTO mails 
-                 (user_id, gmail_message_id, from_email, from_name, subject, body, 
-                  category, priority, status, received_at)
-                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'unread', $9)
+                `INSERT INTO mails
+                 (user_id, gmail_message_id, from_email, from_name, subject, body,
+                  category, priority, status, needs_reply, display_subject, received_at)
+                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'unread', $9, $10, $11)
                  RETURNING *`,
                 [
                     userId,
@@ -307,9 +315,18 @@ router.post('/sync', async (req, res) => {
                     message.body,
                     analysis.category,
                     analysis.priority,
+                    analysis.needsReply,
+                    analysis.displaySubject,
                     message.internalDate
                 ]
             );
+
+            if (analysis.needsReply && result.rows[0]) {
+                await query(
+                    `INSERT INTO mail_drafts (user_id, mail_id, questions) VALUES ($1, $2, $3)`,
+                    [userId, result.rows[0].id, JSON.stringify(analysis.customQuestions || [])]
+                );
+            }
 
             processedMails.push({
                 mail: result.rows[0],

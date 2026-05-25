@@ -6,9 +6,10 @@ const cookieParser = require('cookie-parser');
 const path = require('path');
 require('dotenv').config();
 
-const { pool } = require('./database/db');
+const { pool, query } = require('./database/db');
 const { authenticateToken } = require('./middleware/auth');
 const { pollGmail } = require('./services/gmail');
+const { analyzeEmail } = require('./services/claude');
 
 // Import routes
 const authRoutes = require('./routes/auth');
@@ -17,6 +18,7 @@ const tasksRoutes = require('./routes/tasks');
 const goalsRoutes = require('./routes/goals');
 const dagplannerRoutes = require('./routes/dagplanner');
 const aiRoutes         = require('./routes/ai');
+const mailmakerRoutes  = require('./routes/mailmaker');
 
 // Initialize Express
 const app = express();
@@ -53,6 +55,7 @@ app.use('/api/tasks', authenticateToken, tasksRoutes);
 app.use('/api/goals', authenticateToken, goalsRoutes);
 app.use('/api/dagplanner', authenticateToken, dagplannerRoutes);
 app.use('/api/ai', authenticateToken, aiRoutes);
+app.use('/api/mailmaker', authenticateToken, mailmakerRoutes);
 
 // Serve React frontend in production
 if (process.env.NODE_ENV === 'production') {
@@ -87,27 +90,63 @@ app.use((err, req, res, next) => {
 // Gmail polling interval (every 5 minutes)
 let gmailPollingInterval = null;
 
+async function syncGmailForUser(userId) {
+    const newMessages = await pollGmail(userId);
+    if (newMessages.length === 0) return;
+
+    console.log(`📥 Processing ${newMessages.length} new message(s) for user ${userId}`);
+
+    for (const message of newMessages) {
+        try {
+            const analysis = await analyzeEmail(message);
+            const result = await query(
+                `INSERT INTO mails
+                 (user_id, gmail_message_id, from_email, from_name, subject, body,
+                  category, priority, status, needs_reply, display_subject, received_at)
+                 VALUES ($1,$2,$3,$4,$5,$6,$7,$8,'unread',$9,$10,$11)
+                 RETURNING id`,
+                [
+                    userId, message.id, message.from, message.fromName,
+                    message.subject, message.body,
+                    analysis.category, analysis.priority,
+                    analysis.needsReply, analysis.displaySubject,
+                    message.internalDate,
+                ]
+            );
+
+            if (analysis.needsReply && result.rows[0]) {
+                await query(
+                    `INSERT INTO mail_drafts (user_id, mail_id, questions) VALUES ($1, $2, $3)`,
+                    [userId, result.rows[0].id, JSON.stringify(analysis.customQuestions || [])]
+                );
+            }
+
+            console.log(`✓ Saved: ${message.subject} (needsReply=${analysis.needsReply})`);
+        } catch (err) {
+            console.error(`Error processing message ${message.id}:`, err.message);
+        }
+    }
+}
+
 async function startGmailPolling() {
     console.log('🔄 Starting Gmail polling service...');
-    
+
     gmailPollingInterval = setInterval(async () => {
         try {
-            // Get all users with Gmail connected
             const result = await pool.query(
                 'SELECT id FROM users WHERE gmail_refresh_token IS NOT NULL'
             );
-            
             for (const user of result.rows) {
                 try {
-                    await pollGmail(user.id);
+                    await syncGmailForUser(user.id);
                 } catch (error) {
-                    console.error(`Error polling Gmail for user ${user.id}:`, error.message);
+                    console.error(`Error syncing Gmail for user ${user.id}:`, error.message);
                 }
             }
         } catch (error) {
             console.error('Gmail polling error:', error);
         }
-    }, 5 * 60 * 1000); // 5 minutes
+    }, 5 * 60 * 1000);
 
     console.log('✓ Gmail polling active (every 5 minutes)');
 }

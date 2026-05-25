@@ -232,39 +232,100 @@ Geef ALLEEN een JSON array terug met exact ${actions.length} objecten (in dezelf
 }
 
 /**
- * Generate email reply based on template and questions
+ * Detect if email needs a reply + generate relevant questions
  */
-async function generateReply(originalEmail, template, answers) {
+async function detectNeedsReply(emailData) {
     try {
-        const prompt = `Je bent een professionele wiskunde docent in Nederland (vmbo TL).
+        const prompt = `Analyseer deze email en bepaal of een antwoord vereist is.
+
+EMAIL VAN: ${emailData.from || 'onbekend'}
+ONDERWERP: ${emailData.subject || '(geen onderwerp)'}
+EMAIL TEKST:
+${(emailData.body || '').substring(0, 2000)}
+
+Geef ALLEEN JSON terug:
+{
+  "needsReply": true of false,
+  "displaySubject": "Beknopt Nederlands onderwerp (max 6 woorden) als het origineel leeg/generiek is, anders null",
+  "customQuestions": [
+    {
+      "id": "cq1",
+      "question": "Specifieke vraag voor deze mail",
+      "type": "choice",
+      "options": ["optie1", "optie2", "optie3"]
+    }
+  ]
+}
+
+needsReply=true: directe vraag gesteld, verzoek om bevestiging/actie, uitnodiging.
+needsReply=false: nieuwsbrief, automatisch bericht, eenzijdige info, spam, factuur.
+
+Bedenk 1-3 SPECIFIEKE vragen voor DEZE mail (niet over doel of toon, die staan al vast).
+Gebruik type "choice" voor vragen met duidelijke opties, anders type "text".`;
+
+        const message = await anthropic.messages.create({
+            model: 'claude-haiku-4-5-20251001',
+            max_tokens: 800,
+            messages: [{ role: 'user', content: prompt }]
+        });
+
+        const text = message.content[0].text.trim();
+        const jsonMatch = text.match(/\{[\s\S]*\}/);
+        if (!jsonMatch) return { needsReply: false, displaySubject: null, customQuestions: [] };
+
+        const result = JSON.parse(jsonMatch[0]);
+        return {
+            needsReply:      result.needsReply      || false,
+            displaySubject:  result.displaySubject  || null,
+            customQuestions: result.customQuestions || [],
+        };
+    } catch (error) {
+        console.error('Error detecting reply need:', error);
+        return { needsReply: false, displaySubject: null, customQuestions: [] };
+    }
+}
+
+/**
+ * Generate email reply based on user answers
+ */
+async function generateReply(originalEmail, answers) {
+    try {
+        const doel            = answers.doel            || 'afhandelen';
+        const toon            = answers.toon            || 'professioneel';
+        const specifiekePunten = answers.specifieke_punten || '';
+        const customAnswers   = answers.custom          || {};
+
+        const customLines = Object.entries(customAnswers)
+            .filter(([, v]) => v)
+            .map(([q, a]) => `- ${q}: ${a}`)
+            .join('\n');
+
+        const prompt = `Je bent een wiskunde docent op vmbo TL niveau in Nederland.
 
 ORIGINELE EMAIL:
-Van: ${originalEmail.from}
-Onderwerp: ${originalEmail.subject}
+Van: ${originalEmail.from || 'onbekend'}
+Onderwerp: ${originalEmail.subject || '(geen onderwerp)'}
 
-${originalEmail.body}
-
----
-
-TEMPLATE TYPE: ${template}
-
-ANTWOORDEN OP VRAGEN:
-${Object.entries(answers).map(([q, a]) => `${q}: ${a}`).join('\n')}
+${originalEmail.body || ''}
 
 ---
 
-Schrijf een professioneel maar vriendelijk email antwoord in het Nederlands.
-Gebruik een persoonlijke toon, wees behulpzaam, en eindig met een vriendelijke groet.
+Schrijf een antwoord op bovenstaande email met de volgende parameters:
+- DOEL: ${doel}
+- TOON: ${toon}
+${specifiekePunten ? `- SPECIFIEKE PUNTEN DIE ERIN MOETEN: ${specifiekePunten}` : ''}
+${customLines}
 
-GEEF ALLEEN DE EMAIL TEKST, zonder "Onderwerp:" of andere meta-info.`;
+REGELS:
+- Schrijf ALLEEN de emailtekst, geen headers of "Onderwerp:"
+- Gebruik correct Nederlands
+- Eindig met een passende groet
+- Wees bondig maar volledig`;
 
         const message = await anthropic.messages.create({
             model: 'claude-sonnet-4-6',
             max_tokens: 1500,
-            messages: [{
-                role: 'user',
-                content: prompt
-            }]
+            messages: [{ role: 'user', content: prompt }]
         });
 
         return message.content[0].text.trim();
@@ -282,10 +343,11 @@ async function analyzeEmail(emailData, sourceType = 'email') {
     try {
         console.log('🤖 Analyzing email with Claude...');
 
-        const [tasks, category, priority] = await Promise.all([
+        const [tasks, category, priority, replyInfo] = await Promise.all([
             extractTasks(emailData.body, emailData.subject, emailData.from, sourceType),
             detectCategory(emailData.body, emailData.subject, emailData.from),
-            detectPriority(emailData.body, emailData.subject)
+            detectPriority(emailData.body, emailData.subject),
+            sourceType === 'email' ? detectNeedsReply(emailData) : Promise.resolve({ needsReply: false, displaySubject: null, customQuestions: [] })
         ]);
 
         if (tasks.length > 0) {
@@ -304,7 +366,10 @@ async function analyzeEmail(emailData, sourceType = 'email') {
         return {
             tasks,
             category,
-            priority
+            priority,
+            needsReply:      replyInfo.needsReply,
+            displaySubject:  replyInfo.displaySubject,
+            customQuestions: replyInfo.customQuestions,
         };
 
     } catch (error) {
@@ -312,7 +377,10 @@ async function analyzeEmail(emailData, sourceType = 'email') {
         return {
             tasks: [],
             category: 'werk',
-            priority: 'mid'
+            priority: 'mid',
+            needsReply: false,
+            displaySubject: null,
+            customQuestions: [],
         };
     }
 }
@@ -322,6 +390,7 @@ module.exports = {
     detectCategory,
     detectPriority,
     improveActionsGTD,
+    detectNeedsReply,
     generateReply,
     analyzeEmail
 };

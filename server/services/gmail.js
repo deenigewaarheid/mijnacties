@@ -86,39 +86,27 @@ async function refreshAccessToken(userId) {
 }
 
 /**
- * Get user's Gmail messages with label filter
+ * Get user's Gmail messages from inbox (all incoming, last 2 days)
  */
-async function getMessages(userId, labelName = 'Analyzer', maxResults = 10) {
+async function getMessages(userId, maxResults = 25) {
     try {
-        // Ensure token is valid
         await refreshAccessToken(userId);
-        
-        // Get label ID by name
-        const labelsRes = await gmail.users.labels.list({ userId: 'me' });
-        const label = labelsRes.data.labels.find(l => l.name === labelName);
-        
-        if (!label) {
-            console.log(`Label "${labelName}" not found. Creating...`);
-            await createLabel(labelName);
-            return [];
-        }
-        
-        // Get messages with label
+
         const response = await gmail.users.messages.list({
             userId: 'me',
-            labelIds: [label.id],
-            maxResults
+            labelIds: ['INBOX'],
+            q: 'newer_than:2d',
+            maxResults,
         });
-        
+
         if (!response.data.messages) {
             return [];
         }
-        
-        // Get full message details
+
         const messages = await Promise.all(
             response.data.messages.map(msg => getMessageDetails(msg.id))
         );
-        
+
         return messages;
     } catch (error) {
         console.error('Error getting messages:', error);
@@ -243,34 +231,28 @@ async function archiveMessage(messageId) {
 async function pollGmail(userId) {
     try {
         console.log(`📧 Polling Gmail for user ${userId}...`);
-        
+
         const messages = await getMessages(userId);
-        
+
         if (messages.length === 0) {
             console.log('No new messages');
             return [];
         }
-        
-        console.log(`Found ${messages.length} new message(s)`);
-        
-        // Process each message
+
+        console.log(`Found ${messages.length} message(s), filtering already processed...`);
+
         const newMails = [];
         for (const message of messages) {
-            // Check if already in database
             const existing = await query(
                 'SELECT id FROM mails WHERE gmail_message_id = $1 AND user_id = $2',
                 [message.id, userId]
             );
-            
-            if (existing.rows.length > 0) {
-                console.log(`Message ${message.id} already processed, removing label`);
-                await removeLabel(message.id, 'Analyzer');
-                continue;
+            if (existing.rows.length === 0) {
+                newMails.push(message);
             }
-            
-            newMails.push(message);
         }
-        
+
+        console.log(`${newMails.length} new message(s) to process`);
         return newMails;
     } catch (error) {
         console.error('Error polling Gmail:', error);

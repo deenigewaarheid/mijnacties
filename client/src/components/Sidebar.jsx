@@ -1,13 +1,14 @@
 import { useState, useEffect, useCallback } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
-import { Mail, CheckSquare, Settings, LogOut, RotateCcw, FolderKanban, LayoutDashboard, X, Plus, Trophy, Moon, Sun, CalendarDays, TrendingUp } from 'lucide-react'
+import { Mail, CheckSquare, Settings, LogOut, RotateCcw, FolderKanban, LayoutDashboard, X, Plus, Trophy, Moon, Sun, CalendarDays, TrendingUp, PenLine } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { useDarkMode } from '../context/DarkModeContext'
 import api from '../api/client'
 
 const OVERZICHT = [
-  { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard', badgeKey: null },
-  { to: '/inbox',     icon: Mail,            label: 'Inbox',     badgeKey: 'inbox' },
+  { to: '/dashboard',  icon: LayoutDashboard, label: 'Dashboard',  badgeKey: null },
+  { to: '/inbox',      icon: Mail,            label: 'Inbox',      badgeKey: 'inbox' },
+  { to: '/mailmaker',  icon: PenLine,         label: 'Mailmaker',  badgeKey: 'mailmaker' },
 ]
 
 const LIJSTEN = [
@@ -61,14 +62,14 @@ export default function Sidebar({ open, onClose }) {
   const { user, logout } = useAuth()
   const { dark, toggleDark } = useDarkMode()
   const navigate = useNavigate()
-  const [counts, setCounts] = useState({ inbox: 0, focus: 0, tasks: 0, wachten: 0, ooit: 0, projecten: 0, losse: 0 })
+  const [counts, setCounts] = useState({ inbox: 0, focus: 0, tasks: 0, wachten: 0, ooit: 0, projecten: 0, losse: 0, mailmaker: 0 })
   const [capture, setCapture] = useState(false)
   const [captureText, setCaptureText] = useState('')
   const [captureSaving, setCaptureSaving] = useState(false)
 
   const fetchCounts = useCallback(async () => {
     try {
-      const [tr, mr] = await Promise.all([api.get('/tasks'), api.get('/mails')])
+      const [tr, mr, mmr] = await Promise.all([api.get('/tasks'), api.get('/mails'), api.get('/mailmaker')])
       const open = tr.data.filter(t => !t.completed)
       function getDaysLeft(dl) {
         const d = new Date(dl); d.setHours(0,0,0,0)
@@ -83,6 +84,7 @@ export default function Sidebar({ open, onClose }) {
         ooit:     tr.data.filter(t => t.bestemming === 'ooit').length,
         projecten:open.filter(t => t.bestemming === 'project' || (t.subtasks && t.subtasks.length > 0)).length,
         losse:    open.filter(t => t.bestemming === 'losse_eindjes').length,
+        mailmaker: mmr.data.length,
       })
     } catch {}
   }, [])

@@ -14,6 +14,7 @@ import Projecten from './pages/Projecten'
 import Doelen from './pages/Doelen'
 import Dagplanner from './pages/Dagplanner'
 import Insights from './pages/Insights'
+import Mailmaker from './pages/Mailmaker'
 
 function Protected({ children }) {
   return (
@@ -33,6 +34,7 @@ export default function App() {
             <Route path="/login"     element={<Login />} />
             <Route path="/dashboard" element={<Protected><Dashboard /></Protected>} />
             <Route path="/inbox"     element={<Protected><Inbox /></Protected>} />
+            <Route path="/mailmaker" element={<Protected><Mailmaker /></Protected>} />
             <Route path="/tasks"     element={<Protected><Tasks /></Protected>} />
             <Route path="/focus"     element={<Navigate to="/tasks" replace />} />
             <Route path="/wachten"   element={<Navigate to="/tasks" replace />} />

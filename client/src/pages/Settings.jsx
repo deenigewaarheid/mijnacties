@@ -98,6 +98,8 @@ export default function Settings() {
   const navigate = useNavigate()
   const [gmailConnected, setGmailConnected] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [syncing, setSyncing] = useState(false)
+  const [syncResult, setSyncResult] = useState(null)
 
   useEffect(() => {
     api.get('/auth/gmail/status').then(r => setGmailConnected(r.data.connected)).catch(() => {})
@@ -120,6 +122,23 @@ export default function Settings() {
       window.location.href = data.authUrl
     } catch {
       setLoading(false)
+    }
+  }
+
+  async function handleSync() {
+    setSyncing(true)
+    setSyncResult(null)
+    try {
+      const { data } = await api.post('/mails/sync')
+      setSyncResult(data.newMails > 0
+        ? `✓ ${data.newMails} nieuwe mail${data.newMails !== 1 ? 's' : ''} binnengehaald`
+        : 'Geen nieuwe mails gevonden'
+      )
+    } catch {
+      setSyncResult('Synchronisatie mislukt')
+    } finally {
+      setSyncing(false)
+      setTimeout(() => setSyncResult(null), 4000)
     }
   }
 
@@ -149,14 +168,29 @@ export default function Settings() {
           </div>
           {gmailConnected && <CheckCircle2 size={20} className="text-green-500 flex-shrink-0 mt-0.5" />}
         </div>
-        <button
-          onClick={handleGmailConnect}
-          disabled={loading || gmailConnected}
-          className="mt-4 flex items-center gap-2 bg-blue-800 hover:bg-blue-900 disabled:opacity-50 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-        >
-          <Mail size={14} />
-          {gmailConnected ? 'Gmail verbonden' : loading ? 'Bezig...' : 'Verbind Gmail'}
-        </button>
+        <div className="mt-4 flex items-center gap-3 flex-wrap">
+          <button
+            onClick={handleGmailConnect}
+            disabled={loading || gmailConnected}
+            className="flex items-center gap-2 bg-gray-700 hover:bg-gray-600 disabled:opacity-50 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+          >
+            <Mail size={14} />
+            {gmailConnected ? 'Gmail verbonden' : loading ? 'Bezig...' : 'Verbind Gmail'}
+          </button>
+          {gmailConnected && (
+            <button
+              onClick={handleSync}
+              disabled={syncing}
+              className="flex items-center gap-2 border border-gray-200 hover:border-gray-400 text-gray-600 hover:text-gray-900 px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+            >
+              <Mail size={14} />
+              {syncing ? 'Synchroniseren...' : 'Sync nu'}
+            </button>
+          )}
+        </div>
+        {syncResult && (
+          <p className="mt-2 text-xs text-gray-500">{syncResult}</p>
+        )}
       </div>
 
       <div className="bg-white border border-blue-100 rounded-2xl p-6">
