@@ -1,5 +1,4 @@
 -- Mail Analyzer Database Schema
-
 -- Users table
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
@@ -105,9 +104,3 @@ CREATE TABLE IF NOT EXISTS categories (
 );
 
 CREATE INDEX idx_categories_user_id ON categories(user_id);
-
--- Insert default categories
-INSERT INTO categories (user_id, name, color) VALUES
-    (1, 'school', '#007AFF'),
-    (1, 'privé', '#34C759')
-ON CONFLICT DO NOTHING;
