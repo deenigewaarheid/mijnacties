@@ -276,14 +276,30 @@ router.post('/:id/approve', async (req, res) => {
 
 /**
  * PATCH /api/mails/:id
- * Update mail fields (e.g. needs_reply toggle)
+ * Update mail fields (needs_reply, status)
  */
 router.patch('/:id', async (req, res) => {
     try {
-        const { needs_reply } = req.body;
+        const { needs_reply, status } = req.body;
+        const updates = [];
+        const params = [];
+        let idx = 1;
+
+        if (needs_reply !== undefined) {
+            updates.push(`needs_reply = $${idx++}`);
+            params.push(needs_reply);
+        }
+        if (status !== undefined) {
+            updates.push(`status = $${idx++}`);
+            params.push(status);
+        }
+
+        if (updates.length === 0) return res.json({ success: true });
+
+        params.push(req.params.id, req.userId);
         await query(
-            'UPDATE mails SET needs_reply = $1 WHERE id = $2 AND user_id = $3',
-            [needs_reply, req.params.id, req.userId]
+            `UPDATE mails SET ${updates.join(', ')} WHERE id = $${idx} AND user_id = $${idx + 1}`,
+            params
         );
         res.json({ success: true });
     } catch (error) {

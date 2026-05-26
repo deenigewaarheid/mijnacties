@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { Plus, Mail, X, Trash2, Loader2, CheckCircle2, Upload, FileText, ArrowRight, ChevronRight } from 'lucide-react'
+import { Plus, Mail, X, Trash2, Loader2, CheckCircle2, Upload, FileText, ArrowRight, ChevronRight, Check } from 'lucide-react'
 import api from '../api/client'
 import { refreshBadges } from '../api/badges'
 import { useConfirm } from '../components/ConfirmDialog'
@@ -446,6 +446,7 @@ export default function Inbox() {
   const [syncing, setSyncing]       = useState(false)
   const [reprocessing, setReprocessing] = useState(false)
   const [gmailConnected, setGmailConnected] = useState(false)
+  const [selectedMails, setSelectedMails] = useState(new Set())
   const { confirm, dialog: confirmDialog } = useConfirm()
 
   useEffect(() => {
@@ -507,6 +508,33 @@ export default function Inbox() {
     setMails(ms => ms.map(m => m.id === mailId ? { ...m, needs_reply: !current } : m))
   }
 
+  async function toggleProcessed(e, mailId, currentStatus) {
+    e.stopPropagation()
+    const newStatus = currentStatus === 'approved' ? 'unread' : 'approved'
+    await api.patch(`/mails/${mailId}`, { status: newStatus })
+    setMails(ms => ms.map(m => m.id === mailId ? { ...m, status: newStatus } : m))
+  }
+
+  function toggleSelect(mailId) {
+    setSelectedMails(prev => {
+      const next = new Set(prev)
+      if (next.has(mailId)) next.delete(mailId)
+      else next.add(mailId)
+      return next
+    })
+  }
+
+  async function handleBulkDelete() {
+    const ok = await confirm(`Weet je zeker dat je ${selectedMails.size} mail${selectedMails.size !== 1 ? 's' : ''} wilt verwijderen?`)
+    if (!ok) return
+    for (const mailId of selectedMails) {
+      await api.delete(`/mails/${mailId}`)
+    }
+    setMails(ms => ms.filter(m => !selectedMails.has(m.id)))
+    setSelectedMails(new Set())
+    refreshBadges()
+  }
+
   function formatDate(dateStr) {
     return new Date(dateStr).toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' })
   }
@@ -554,41 +582,86 @@ export default function Inbox() {
         </div>
       )}
 
+      {/* Bulk delete toolbar */}
+      {selectedMails.size > 0 && (
+        <div className="flex items-center gap-3 mb-3 px-4 py-2.5 bg-red-50 border border-red-200 rounded-xl">
+          <span className="text-sm text-gray-600 flex-1">{selectedMails.size} geselecteerd</span>
+          <button onClick={() => setSelectedMails(new Set())} className="text-xs text-gray-500 hover:text-gray-700">
+            Deselecteer alles
+          </button>
+          <button onClick={handleBulkDelete}
+            className="flex items-center gap-1.5 text-xs text-white bg-red-600 hover:bg-red-700 px-3 py-1.5 rounded-lg transition-colors">
+            <Trash2 size={12} />Verwijder ({selectedMails.size})
+          </button>
+        </div>
+      )}
+
       <div className="space-y-2">
-        {mails.map(mail => (
-          <div key={mail.id}
-            className="bg-white border border-gray-100 rounded-xl px-5 py-3.5 hover:border-blue-200 hover:shadow-sm transition-all">
-            <div className="flex items-center justify-between gap-4">
-              <div className="min-w-0 flex-1 cursor-pointer" onClick={() => { setAnalyzeMail(mail); setShowAnalyze(true) }}>
-                <p className="text-xs text-blue-500 mb-0.5 truncate">{mail.from_email}</p>
-                <p className="font-medium text-gray-900 text-sm truncate">{mail.subject}</p>
-              </div>
-              <div className="flex items-center gap-2 flex-shrink-0">
-                <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${PRIORITY_COLORS[mail.priority] || PRIORITY_COLORS.mid}`}>
-                  {PRIORITY_LABELS[mail.priority] || mail.priority}
-                </span>
-                <span className={`text-xs px-2 py-0.5 rounded-full ${CATEGORY_COLORS[mail.category] || 'bg-gray-100 text-gray-500'}`}>
-                  {mail.category}
-                </span>
-                <span className="text-xs text-gray-400">{formatDate(mail.received_at)}</span>
-                {/* Mailmaker toggle */}
-                <button
-                  onClick={e => toggleMailmaker(e, mail.id, mail.needs_reply)}
-                  title={mail.needs_reply ? 'In Mailmaker — klik om te verwijderen' : 'Toevoegen aan Mailmaker'}
-                  className={`text-xs px-2 py-0.5 rounded-full border transition-colors ${
-                    mail.needs_reply
-                      ? 'bg-blue-900 border-blue-900 text-white'
-                      : 'border-gray-200 text-gray-400 hover:border-blue-400 hover:text-blue-600'
-                  }`}>
-                  ✉
-                </button>
-                <button onClick={e => handleDelete(e, mail.id)} className="text-gray-300 hover:text-red-500 transition-colors">
-                  <Trash2 size={14} />
-                </button>
+        {mails.map(mail => {
+          const isApproved = mail.status === 'approved'
+          const isSelected = selectedMails.has(mail.id)
+          return (
+            <div key={mail.id}
+              className={`bg-white border rounded-xl px-4 py-3.5 transition-all ${
+                isSelected ? 'border-blue-300 bg-blue-50' :
+                isApproved ? 'border-green-100 opacity-60' :
+                'border-gray-100 hover:border-blue-200 hover:shadow-sm'
+              }`}>
+              <div className="flex items-center gap-3">
+                {/* Multi-select checkbox */}
+                <input
+                  type="checkbox"
+                  checked={isSelected}
+                  onChange={() => toggleSelect(mail.id)}
+                  onClick={e => e.stopPropagation()}
+                  className="w-4 h-4 accent-blue-700 flex-shrink-0 cursor-pointer"
+                />
+                {/* Content */}
+                <div className="min-w-0 flex-1 cursor-pointer" onClick={() => { setAnalyzeMail(mail); setShowAnalyze(true) }}>
+                  <p className="text-xs text-blue-500 mb-0.5 truncate">{mail.from_email}</p>
+                  <p className={`font-medium text-sm truncate ${isApproved ? 'line-through text-gray-400' : 'text-gray-900'}`}>
+                    {mail.subject}
+                  </p>
+                </div>
+                {/* Actions */}
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${PRIORITY_COLORS[mail.priority] || PRIORITY_COLORS.mid}`}>
+                    {PRIORITY_LABELS[mail.priority] || mail.priority}
+                  </span>
+                  <span className={`text-xs px-2 py-0.5 rounded-full ${CATEGORY_COLORS[mail.category] || 'bg-gray-100 text-gray-500'}`}>
+                    {mail.category}
+                  </span>
+                  <span className="text-xs text-gray-400">{formatDate(mail.received_at)}</span>
+                  {/* Processed toggle */}
+                  <button
+                    onClick={e => toggleProcessed(e, mail.id, mail.status)}
+                    title={isApproved ? 'Markeer als ongelezen' : 'Markeer als afgehandeld'}
+                    className={`w-6 h-6 rounded-full border flex items-center justify-center transition-colors ${
+                      isApproved
+                        ? 'bg-green-500 border-green-500 text-white'
+                        : 'border-gray-300 text-gray-300 hover:border-green-400 hover:text-green-500'
+                    }`}>
+                    <Check size={11} />
+                  </button>
+                  {/* Mailmaker toggle */}
+                  <button
+                    onClick={e => toggleMailmaker(e, mail.id, mail.needs_reply)}
+                    title={mail.needs_reply ? 'In Mailmaker — klik om te verwijderen' : 'Toevoegen aan Mailmaker'}
+                    className={`text-xs px-2 py-0.5 rounded-full border transition-colors ${
+                      mail.needs_reply
+                        ? 'bg-blue-900 border-blue-900 text-white'
+                        : 'border-gray-200 text-gray-400 hover:border-blue-400 hover:text-blue-600'
+                    }`}>
+                    ✉
+                  </button>
+                  <button onClick={e => handleDelete(e, mail.id)} className="text-gray-300 hover:text-red-500 transition-colors">
+                    <Trash2 size={14} />
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
 
       {/* Mail detail modal */}
