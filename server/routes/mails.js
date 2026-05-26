@@ -310,6 +310,78 @@ router.delete('/:id', async (req, res) => {
 });
 
 /**
+ * POST /api/mails/reprocess
+ * Re-analyze all mails that have no tasks yet
+ */
+router.post('/reprocess', async (req, res) => {
+    try {
+        const userId = req.userId;
+
+        // Find mails with no linked tasks
+        const result = await query(
+            `SELECT m.* FROM mails m
+             WHERE m.user_id = $1
+               AND NOT EXISTS (SELECT 1 FROM tasks t WHERE t.mail_id = m.id)
+             ORDER BY m.received_at DESC
+             LIMIT 50`,
+            [userId]
+        );
+
+        const mails = result.rows;
+        if (mails.length === 0) {
+            return res.json({ processed: 0, message: 'Alle mails hebben al taken' });
+        }
+
+        let processed = 0;
+        let totalTasks = 0;
+
+        for (const mail of mails) {
+            try {
+                const analysis = await analyzeEmail({
+                    body: mail.body,
+                    subject: mail.subject,
+                    from: mail.from_email,
+                });
+
+                const toSave = analysis.tasks.filter(t => t.bestemming !== 'weggooien' && t.title);
+                for (const task of toSave) {
+                    const title = task.gtd?.verbeterd || task.title;
+                    await query(
+                        `INSERT INTO tasks (user_id, mail_id, title, description, deadline, priority, category, context, energie, tijd_minuten, bestemming)
+                         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)`,
+                        [userId, mail.id, title, task.description || null, task.deadline || null,
+                         task.priority || 'mid', task.category || 'werk', task.context || null,
+                         task.energie || null, task.tijd_minuten || null, task.bestemming || 'actie']
+                    );
+                    totalTasks++;
+                }
+
+                if (analysis.needsReply) {
+                    await query(
+                        `UPDATE mails SET needs_reply = TRUE, display_subject = $1 WHERE id = $2`,
+                        [analysis.displaySubject, mail.id]
+                    );
+                }
+
+                if (toSave.length > 0) {
+                    await query(`UPDATE mails SET status = 'approved' WHERE id = $1`, [mail.id]);
+                }
+
+                processed++;
+                console.log(`✓ Reprocessed: ${mail.subject} | ${toSave.length} taken`);
+            } catch (err) {
+                console.error(`Error reprocessing mail ${mail.id}:`, err.message);
+            }
+        }
+
+        res.json({ processed, totalTasks, message: `${processed} mails herverwerkt, ${totalTasks} taken aangemaakt` });
+    } catch (error) {
+        console.error('Reprocess error:', error);
+        res.status(500).json({ error: 'Herverwerken mislukt' });
+    }
+});
+
+/**
  * POST /api/mails/sync
  * Manually trigger Gmail sync
  */

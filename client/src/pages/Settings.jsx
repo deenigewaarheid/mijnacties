@@ -100,6 +100,8 @@ export default function Settings() {
   const [loading, setLoading] = useState(false)
   const [syncing, setSyncing] = useState(false)
   const [syncResult, setSyncResult] = useState(null)
+  const [reprocessing, setReprocessing] = useState(false)
+  const [reprocessResult, setReprocessResult] = useState(null)
 
   useEffect(() => {
     api.get('/auth/gmail/status').then(r => setGmailConnected(r.data.connected)).catch(() => {})
@@ -139,6 +141,20 @@ export default function Settings() {
     } finally {
       setSyncing(false)
       setTimeout(() => setSyncResult(null), 4000)
+    }
+  }
+
+  async function handleReprocess() {
+    setReprocessing(true)
+    setReprocessResult(null)
+    try {
+      const { data } = await api.post('/mails/reprocess')
+      setReprocessResult(data.message)
+    } catch {
+      setReprocessResult('Herverwerken mislukt')
+    } finally {
+      setReprocessing(false)
+      setTimeout(() => setReprocessResult(null), 6000)
     }
   }
 
@@ -188,8 +204,19 @@ export default function Settings() {
             </button>
           )}
         </div>
-        {syncResult && (
-          <p className="mt-2 text-xs text-gray-500">{syncResult}</p>
+        {syncResult && <p className="mt-2 text-xs text-gray-500">{syncResult}</p>}
+        {gmailConnected && (
+          <div className="mt-3">
+            <button
+              onClick={handleReprocess}
+              disabled={reprocessing}
+              className="flex items-center gap-2 border border-gray-200 hover:border-gray-400 text-gray-600 hover:text-gray-900 px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+            >
+              <Mail size={14} />
+              {reprocessing ? 'Bezig...' : 'Taken genereren uit bestaande mails'}
+            </button>
+            {reprocessResult && <p className="mt-2 text-xs text-gray-500">{reprocessResult}</p>}
+          </div>
         )}
       </div>
 
