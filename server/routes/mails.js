@@ -343,7 +343,20 @@ router.post('/reprocess', async (req, res) => {
                     from: mail.from_email,
                 });
 
-                const toSave = analysis.tasks.filter(t => t.bestemming !== 'weggooien' && t.title);
+                let toSave = analysis.tasks.filter(t => t.bestemming !== 'weggooien' && t.title);
+
+                // Fallback: als geen taken gevonden, maak een "Lees en verwerk" taak
+                if (toSave.length === 0) {
+                    toSave = [{
+                        title: `Lees en verwerk: ${mail.subject}`,
+                        description: `Mail van ${mail.from_email}`,
+                        deadline: null, priority: 'mid',
+                        category: analysis.category || 'werk',
+                        context: '@computer', energie: 'laag',
+                        tijd_minuten: 2, bestemming: 'actie',
+                    }];
+                }
+
                 for (const task of toSave) {
                     const title = task.gtd?.verbeterd || task.title;
                     await query(

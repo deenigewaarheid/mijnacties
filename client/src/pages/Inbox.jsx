@@ -440,7 +440,37 @@ export default function Inbox() {
   const [loading, setLoading]       = useState(true)
   const [showAnalyze, setShowAnalyze] = useState(false)
   const [successMsg, setSuccessMsg] = useState('')
+  const [syncing, setSyncing]       = useState(false)
+  const [reprocessing, setReprocessing] = useState(false)
+  const [gmailConnected, setGmailConnected] = useState(false)
   const { confirm, dialog: confirmDialog } = useConfirm()
+
+  useEffect(() => {
+    api.get('/auth/gmail/status').then(r => setGmailConnected(r.data.connected)).catch(() => {})
+  }, [])
+
+  async function handleSync() {
+    setSyncing(true)
+    try {
+      const { data } = await api.post('/mails/sync')
+      const msg = data.newMails > 0
+        ? `✓ ${data.newMails} nieuwe mail${data.newMails !== 1 ? 's' : ''} binnengehaald`
+        : 'Geen nieuwe mails'
+      setSuccessMsg(msg)
+      if (data.newMails > 0) fetchMails()
+    } catch { setSuccessMsg('Sync mislukt') }
+    finally { setSyncing(false); setTimeout(() => setSuccessMsg(''), 4000) }
+  }
+
+  async function handleReprocess() {
+    setReprocessing(true)
+    try {
+      const { data } = await api.post('/mails/reprocess')
+      setSuccessMsg(data.message)
+      fetchMails()
+    } catch { setSuccessMsg('Herverwerken mislukt') }
+    finally { setReprocessing(false); setTimeout(() => setSuccessMsg(''), 6000) }
+  }
 
   function fetchMails() {
     return api.get('/mails').then(r => setMails(r.data))
@@ -475,20 +505,31 @@ export default function Inbox() {
     <>
       {confirmDialog}
       <div>
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-4">
         <h1 className="text-2xl font-bold text-blue-900">Inbox</h1>
-        <div className="flex items-center gap-3">
+        <button onClick={() => setShowAnalyze(true)}
+          className="flex items-center gap-2 bg-blue-800 hover:bg-blue-900 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+          <Plus size={15} />Mail analyseren
+        </button>
+      </div>
+
+      {gmailConnected && (
+        <div className="flex items-center gap-2 mb-5 flex-wrap">
+          <button onClick={handleSync} disabled={syncing}
+            className="flex items-center gap-2 border border-gray-200 hover:border-gray-400 text-gray-600 hover:text-gray-900 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors disabled:opacity-50">
+            <Mail size={13} />{syncing ? 'Synchroniseren...' : 'Sync nu'}
+          </button>
+          <button onClick={handleReprocess} disabled={reprocessing}
+            className="flex items-center gap-2 border border-gray-200 hover:border-gray-400 text-gray-600 hover:text-gray-900 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors disabled:opacity-50">
+            <Mail size={13} />{reprocessing ? 'Bezig...' : 'Taken genereren uit mails'}
+          </button>
           {successMsg && (
-            <span className="text-sm text-green-600 font-medium flex items-center gap-1">
-              <CheckCircle2 size={14} />{successMsg}
+            <span className="text-xs text-green-600 font-medium flex items-center gap-1">
+              <CheckCircle2 size={13} />{successMsg}
             </span>
           )}
-          <button onClick={() => setShowAnalyze(true)}
-            className="flex items-center gap-2 bg-blue-800 hover:bg-blue-900 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
-            <Plus size={15} />Mail analyseren
-          </button>
         </div>
-      </div>
+      )}
 
       {loading && <p className="text-gray-500 text-sm">Laden...</p>}
 
