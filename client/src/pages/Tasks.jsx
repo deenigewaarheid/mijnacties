@@ -208,7 +208,7 @@ function SubtaskItem({ sub, taskId, onToggle, onUpdate, onDelete }) {
 
 // ─── TaskItem ─────────────────────────────────────────────────────────────────
 
-function TaskItem({ task, onToggle, onSubtaskToggle, onDelete, onUpdate, onSubtaskAdd, onSubtaskUpdate, onSubtaskDelete, onFocusToggle, onTimeChange, onSubtaskTimeChange }) {
+function TaskItem({ task, onToggle, onSubtaskToggle, onDelete, onUpdate, onSubtaskAdd, onSubtaskUpdate, onSubtaskDelete, onFocusToggle, onTimeChange, onSubtaskTimeChange, onSelect, selected }) {
   const [open,         setOpen]         = useState(false)
   const [editing,      setEditing]      = useState(false)
   const [isCompleting, setIsCompleting] = useState(false)
@@ -231,6 +231,7 @@ function TaskItem({ task, onToggle, onSubtaskToggle, onDelete, onUpdate, onSubta
   const openSubs     = subs.filter(s => !s.completed).length
   const isFocused    = task.focus || isAutoFocus(task)
   const borderColor  = PRIO_BORDER[task.priority] || 'border-l-gray-200 dark:border-l-gray-700'
+  const isSelected   = typeof selected === 'function' ? selected(task.id) : !!selected
 
   async function handleComplete() {
     setIsCompleting(true)
@@ -351,10 +352,24 @@ function TaskItem({ task, onToggle, onSubtaskToggle, onDelete, onUpdate, onSubta
 
   // ── Display mode ──────────────────────────────────────────────────────────
   return (
-    <div className={`group relative bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 border-l-4 ${borderColor} rounded-xl px-4 py-3.5 hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-sm transition-all duration-200 ${isCompleting ? 'opacity-0 scale-95 translate-x-4' : 'opacity-100 scale-100'}`}>
+    <div className={`group relative bg-white dark:bg-gray-900 border border-l-4 ${borderColor} rounded-xl px-4 py-3.5 transition-all duration-200 ${
+      isSelected ? 'border-blue-300 dark:border-blue-600 bg-blue-50 dark:bg-blue-950/20' :
+      'border-gray-100 dark:border-gray-800 hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-sm'
+    } ${isCompleting ? 'opacity-0 scale-95 translate-x-4' : 'opacity-100 scale-100'}`}>
       <div className="flex items-start gap-3">
 
-        {/* Checkbox */}
+        {/* Multi-select checkbox */}
+        {onSelect && (
+          <input
+            type="checkbox"
+            checked={isSelected}
+            onChange={() => onSelect(task.id)}
+            onClick={e => e.stopPropagation()}
+            className="mt-1 w-4 h-4 accent-blue-700 flex-shrink-0 cursor-pointer"
+          />
+        )}
+
+        {/* Completion toggle */}
         <button onClick={() => task.completed ? onToggle(task.id, false) : handleComplete()}
           className={`mt-0.5 flex-shrink-0 transition-colors ${task.completed ? 'text-green-400' : 'text-gray-200 hover:text-gray-500 dark:hover:text-gray-400'}`}>
           {task.completed
@@ -996,6 +1011,7 @@ export default function Tasks() {
   const [tabCounts,   setTabCounts]   = useState({})
   const [collapsed,   setCollapsed]   = useState({})
   const [currentEnergy, setCurrentEnergy] = useState(null)
+  const [selectedTasks, setSelectedTasks] = useState(new Set())
   const { confirm, dialog: confirmDialog } = useConfirm()
 
   useEffect(() => {
@@ -1029,7 +1045,7 @@ export default function Tasks() {
 
   useEffect(() => {
     if (mainTab !== 'acties') return
-    setLoading(true); setShowForm(false); setForm(EMPTY_FORM); setCurrentEnergy(null)
+    setLoading(true); setShowForm(false); setForm(EMPTY_FORM); setCurrentEnergy(null); setSelectedTasks(new Set())
     api.get(endpoint + completedFilter)
       .then(r => setTasks(r.data))
       .finally(() => setLoading(false))
@@ -1065,6 +1081,26 @@ export default function Tasks() {
     const ok = await confirm('Weet je zeker dat je deze taak wilt verwijderen?')
     if (!ok) return
     await api.delete(`/tasks/${id}`); setTasks(ts => ts.filter(t => t.id !== id)); refreshBadges()
+  }
+
+  function toggleSelectTask(id) {
+    setSelectedTasks(prev => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
+
+  async function handleBulkDeleteTasks() {
+    const ok = await confirm(`Weet je zeker dat je ${selectedTasks.size} taak${selectedTasks.size !== 1 ? 'en' : ''} wilt verwijderen?`)
+    if (!ok) return
+    for (const id of selectedTasks) {
+      await api.delete(`/tasks/${id}`)
+    }
+    setTasks(ts => ts.filter(t => !selectedTasks.has(t.id)))
+    setSelectedTasks(new Set())
+    refreshBadges()
   }
   async function handleUpdate(id, updates) {
     const res = await api.patch(`/tasks/${id}`, updates)
@@ -1124,6 +1160,8 @@ export default function Tasks() {
     onSubtaskUpdate: handleSubtaskUpdate, onSubtaskDelete: handleSubtaskDelete,
     onFocusToggle: handleFocusToggle,
     onTimeChange: handleTimeChange, onSubtaskTimeChange: handleSubtaskTimeChange,
+    onSelect: toggleSelectTask,
+    selected: id => selectedTasks.has(id),
   }
 
   function sortByUrgency(list) {
@@ -1329,6 +1367,23 @@ export default function Tasks() {
                 Nieuwe taak toevoegen
               </button>
             )
+          )}
+
+          {/* Bulk delete toolbar */}
+          {selectedTasks.size > 0 && (
+            <div className="flex items-center gap-3 mb-4 px-4 py-2.5 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-xl">
+              <span className="text-sm text-gray-600 dark:text-gray-300 flex-1">
+                {selectedTasks.size} taak{selectedTasks.size !== 1 ? 'en' : ''} geselecteerd
+              </span>
+              <button onClick={() => setSelectedTasks(new Set())}
+                className="text-xs text-gray-500 hover:text-gray-700 dark:hover:text-gray-200 transition-colors">
+                Deselecteer alles
+              </button>
+              <button onClick={handleBulkDeleteTasks}
+                className="flex items-center gap-1.5 text-xs text-white bg-red-600 hover:bg-red-700 px-3 py-1.5 rounded-lg transition-colors">
+                <Trash2 size={12} />Verwijder ({selectedTasks.size})
+              </button>
+            </div>
           )}
 
           {loading && <p className="text-gray-400 text-sm">Laden...</p>}
