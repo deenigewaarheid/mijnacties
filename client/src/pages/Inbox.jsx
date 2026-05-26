@@ -24,10 +24,12 @@ const EMPTY_MAIL = () => ({ body: '', subject: '', from: '' })
 
 // ─── Analyze panel ────────────────────────────────────────────────────────────
 
-function AnalyzePanel({ onClose, onDone }) {
+function AnalyzePanel({ onClose, onDone, initialMail }) {
   const [step, setStep]           = useState(1)
   const [inputTab, setInputTab]   = useState('text')
-  const [mails, setMails]         = useState([EMPTY_MAIL()])
+  const [mails, setMails]         = useState(initialMail
+    ? [{ body: initialMail.body || '', subject: initialMail.subject || '', from: initialMail.from_email || '' }]
+    : [EMPTY_MAIL()])
   const [file, setFile]           = useState(null)
   const [fileSubject, setFileSubject] = useState('')
   const [fileFrom, setFileFrom]   = useState('')
@@ -439,6 +441,7 @@ export default function Inbox() {
   const [selected, setSelected]     = useState(null)
   const [loading, setLoading]       = useState(true)
   const [showAnalyze, setShowAnalyze] = useState(false)
+  const [analyzeMail, setAnalyzeMail] = useState(null)
   const [successMsg, setSuccessMsg] = useState('')
   const [syncing, setSyncing]       = useState(false)
   const [reprocessing, setReprocessing] = useState(false)
@@ -492,9 +495,16 @@ export default function Inbox() {
 
   function handleDone() {
     setShowAnalyze(false)
+    setAnalyzeMail(null)
     fetchMails()
     setSuccessMsg('Taken opgeslagen!')
     setTimeout(() => setSuccessMsg(''), 3000)
+  }
+
+  async function toggleMailmaker(e, mailId, current) {
+    e.stopPropagation()
+    await api.patch(`/mails/${mailId}`, { needs_reply: !current })
+    setMails(ms => ms.map(m => m.id === mailId ? { ...m, needs_reply: !current } : m))
   }
 
   function formatDate(dateStr) {
@@ -546,10 +556,10 @@ export default function Inbox() {
 
       <div className="space-y-2">
         {mails.map(mail => (
-          <div key={mail.id} onClick={() => setSelected(mail)}
-            className="bg-white border border-gray-100 rounded-xl px-5 py-3.5 cursor-pointer hover:border-blue-200 hover:shadow-sm transition-all">
+          <div key={mail.id}
+            className="bg-white border border-gray-100 rounded-xl px-5 py-3.5 hover:border-blue-200 hover:shadow-sm transition-all">
             <div className="flex items-center justify-between gap-4">
-              <div className="min-w-0">
+              <div className="min-w-0 flex-1 cursor-pointer" onClick={() => { setAnalyzeMail(mail); setShowAnalyze(true) }}>
                 <p className="text-xs text-blue-500 mb-0.5 truncate">{mail.from_email}</p>
                 <p className="font-medium text-gray-900 text-sm truncate">{mail.subject}</p>
               </div>
@@ -561,6 +571,17 @@ export default function Inbox() {
                   {mail.category}
                 </span>
                 <span className="text-xs text-gray-400">{formatDate(mail.received_at)}</span>
+                {/* Mailmaker toggle */}
+                <button
+                  onClick={e => toggleMailmaker(e, mail.id, mail.needs_reply)}
+                  title={mail.needs_reply ? 'In Mailmaker — klik om te verwijderen' : 'Toevoegen aan Mailmaker'}
+                  className={`text-xs px-2 py-0.5 rounded-full border transition-colors ${
+                    mail.needs_reply
+                      ? 'bg-blue-900 border-blue-900 text-white'
+                      : 'border-gray-200 text-gray-400 hover:border-blue-400 hover:text-blue-600'
+                  }`}>
+                  ✉
+                </button>
                 <button onClick={e => handleDelete(e, mail.id)} className="text-gray-300 hover:text-red-500 transition-colors">
                   <Trash2 size={14} />
                 </button>
@@ -580,7 +601,13 @@ export default function Inbox() {
       )}
 
       {/* Analyze slide-over */}
-      {showAnalyze && <AnalyzePanel onClose={() => setShowAnalyze(false)} onDone={handleDone} />}
+      {showAnalyze && (
+        <AnalyzePanel
+          onClose={() => { setShowAnalyze(false); setAnalyzeMail(null) }}
+          onDone={handleDone}
+          initialMail={analyzeMail}
+        />
+      )}
     </div>
     </>
   )

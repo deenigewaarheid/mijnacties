@@ -275,6 +275,24 @@ router.post('/:id/approve', async (req, res) => {
 });
 
 /**
+ * PATCH /api/mails/:id
+ * Update mail fields (e.g. needs_reply toggle)
+ */
+router.patch('/:id', async (req, res) => {
+    try {
+        const { needs_reply } = req.body;
+        await query(
+            'UPDATE mails SET needs_reply = $1 WHERE id = $2 AND user_id = $3',
+            [needs_reply, req.params.id, req.userId]
+        );
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Update mail error:', error);
+        res.status(500).json({ error: 'Bijwerken mislukt' });
+    }
+});
+
+/**
  * DELETE /api/mails/:id
  * Delete mail
  */
