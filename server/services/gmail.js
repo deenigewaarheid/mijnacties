@@ -133,18 +133,40 @@ async function getMessageDetails(messageId) {
         const subject = headers.find(h => h.name === 'Subject')?.value || '';
         const date = headers.find(h => h.name === 'Date')?.value || '';
         
-        // Get email body
-        let body = '';
-        if (message.payload.body.data) {
-            body = Buffer.from(message.payload.body.data, 'base64').toString('utf-8');
-        } else if (message.payload.parts) {
-            const textPart = message.payload.parts.find(
-                part => part.mimeType === 'text/plain'
-            );
-            if (textPart && textPart.body.data) {
-                body = Buffer.from(textPart.body.data, 'base64').toString('utf-8');
+        // Get email body — search recursively through parts
+        function extractBody(payload) {
+            // Direct body data
+            if (payload.body && payload.body.data) {
+                const text = Buffer.from(payload.body.data, 'base64').toString('utf-8');
+                if (payload.mimeType === 'text/html') {
+                    return text.replace(/<[^>]+>/g, ' ').replace(/\s{2,}/g, '\n').trim();
+                }
+                return text;
             }
+            if (!payload.parts) return '';
+
+            // Prefer text/plain
+            const plain = payload.parts.find(p => p.mimeType === 'text/plain');
+            if (plain && plain.body && plain.body.data) {
+                return Buffer.from(plain.body.data, 'base64').toString('utf-8');
+            }
+            // Fall back to text/html
+            const html = payload.parts.find(p => p.mimeType === 'text/html');
+            if (html && html.body && html.body.data) {
+                return Buffer.from(html.body.data, 'base64').toString('utf-8')
+                    .replace(/<[^>]+>/g, ' ').replace(/\s{2,}/g, '\n').trim();
+            }
+            // Recurse into multipart/* parts
+            for (const part of payload.parts) {
+                if (part.mimeType && part.mimeType.startsWith('multipart/')) {
+                    const result = extractBody(part);
+                    if (result) return result;
+                }
+            }
+            return '';
         }
+
+        const body = extractBody(message.payload);
         
         // Extract email address and name
         const fromMatch = from.match(/(.*?)\s*<(.+?)>/) || [null, from, from];
