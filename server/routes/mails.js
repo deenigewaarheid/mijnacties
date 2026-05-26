@@ -317,11 +317,10 @@ router.post('/reprocess', async (req, res) => {
     try {
         const userId = req.userId;
 
-        // Find mails with no linked tasks
+        // Find all mails (reprocess cleans up bad tasks and regenerates)
         const result = await query(
             `SELECT m.* FROM mails m
              WHERE m.user_id = $1
-               AND NOT EXISTS (SELECT 1 FROM tasks t WHERE t.mail_id = m.id)
              ORDER BY m.received_at DESC
              LIMIT 50`,
             [userId]
@@ -343,19 +342,10 @@ router.post('/reprocess', async (req, res) => {
                     from: mail.from_email,
                 });
 
-                let toSave = analysis.tasks.filter(t => t.bestemming !== 'weggooien' && t.title);
+                // Verwijder bestaande taken voor deze mail (schone herstart)
+                await query('DELETE FROM tasks WHERE mail_id = $1 AND user_id = $2', [mail.id, userId]);
 
-                // Fallback: als geen taken gevonden, maak een "Lees en verwerk" taak
-                if (toSave.length === 0) {
-                    toSave = [{
-                        title: `Lees en verwerk: ${mail.subject}`,
-                        description: `Mail van ${mail.from_email}`,
-                        deadline: null, priority: 'mid',
-                        category: analysis.category || 'werk',
-                        context: '@computer', energie: 'laag',
-                        tijd_minuten: 2, bestemming: 'actie',
-                    }];
-                }
+                const toSave = analysis.tasks.filter(t => t.bestemming !== 'weggooien' && t.title);
 
                 for (const task of toSave) {
                     const title = task.gtd?.verbeterd || task.title;

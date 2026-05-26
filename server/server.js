@@ -138,18 +138,7 @@ async function syncGmailForUser(userId) {
             );
 
             const mailId = result.rows[0].id;
-            let tasksToSave = analysis.tasks;
-            if (tasksToSave.filter(t => t.bestemming !== 'weggooien').length === 0) {
-                tasksToSave = [{
-                    title: `Lees en verwerk: ${message.subject}`,
-                    description: `Mail van ${message.from}`,
-                    deadline: null, priority: 'mid',
-                    category: analysis.category || 'werk',
-                    context: '@computer', energie: 'laag',
-                    tijd_minuten: 2, bestemming: 'actie',
-                }];
-            }
-            const taskCount = await saveTasksForMail(userId, mailId, tasksToSave);
+            const taskCount = await saveTasksForMail(userId, mailId, analysis.tasks);
 
             if (analysis.needsReply) {
                 await query(
