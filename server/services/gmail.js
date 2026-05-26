@@ -1,5 +1,6 @@
 const { google } = require('googleapis');
 const { query } = require('../database/db');
+const { processAttachments } = require('./attachments');
 require('dotenv').config();
 
 // OAuth2 client setup
@@ -115,6 +116,47 @@ async function getMessages(userId, maxResults = 25) {
 }
 
 /**
+ * Recursively collect attachment parts from a message payload,
+ * then fetch the actual binary data for each.
+ */
+async function collectAttachments(payload, messageId) {
+    const parts = [];
+
+    function scan(part) {
+        if (part.filename && part.filename.length > 0) {
+            parts.push(part);
+        }
+        if (part.parts) {
+            for (const p of part.parts) scan(p);
+        }
+    }
+    scan(payload);
+
+    const result = [];
+    for (const part of parts) {
+        try {
+            let buffer;
+            if (part.body?.data) {
+                buffer = Buffer.from(part.body.data, 'base64');
+            } else if (part.body?.attachmentId) {
+                const res = await gmail.users.messages.attachments.get({
+                    userId: 'me',
+                    messageId,
+                    id: part.body.attachmentId,
+                });
+                buffer = Buffer.from(res.data.data, 'base64');
+            }
+            if (buffer) {
+                result.push({ buffer, mimeType: part.mimeType || '', filename: part.filename });
+            }
+        } catch (err) {
+            console.error(`Error fetching attachment ${part.filename}:`, err.message);
+        }
+    }
+    return result;
+}
+
+/**
  * Parse Dutch Outlook forward header from email body.
  * Returns { fromEmail, fromName, body } with header stripped, or null if not a forward.
  *
@@ -208,12 +250,27 @@ async function getMessageDetails(messageId) {
             body      = forwarded.body;
         }
 
+        // Process attachments: PDFs/docx → appended as text, images → vision, audio → Whisper
+        let images = [];
+        try {
+            const attachmentParts = await collectAttachments(message.payload, messageId);
+            if (attachmentParts.length > 0) {
+                console.log(`📎 ${attachmentParts.length} bijlage(n) gevonden voor bericht ${messageId}`);
+                const { textContent, images: attImages } = await processAttachments(attachmentParts);
+                if (textContent) body += '\n\n' + textContent;
+                images = attImages;
+            }
+        } catch (err) {
+            console.error('Error processing attachments:', err.message);
+        }
+
         return {
             id: message.id,
             from: fromEmail,
             fromName,
             subject,
             body,
+            images,
             date: new Date(date),
             internalDate: new Date(parseInt(message.internalDate))
         };

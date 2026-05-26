@@ -8,7 +8,7 @@ const anthropic = new Anthropic({
 /**
  * Extract tasks from email body using Claude
  */
-async function extractTasks(emailBody, emailSubject, emailFrom, sourceType = 'email') {
+async function extractTasks(emailBody, emailSubject, emailFrom, sourceType = 'email', images = []) {
     try {
         const isDocument = sourceType === 'file';
         const intro = isDocument
@@ -49,13 +49,21 @@ Geef ALLEEN een JSON array terug, zonder uitleg:
 
 Als er GEEN actiepunten zijn, return: []`;
 
+        // Build content: prepend images if present (Claude vision)
+        const content = images.length > 0
+            ? [
+                ...images.map(img => ({
+                    type: 'image',
+                    source: { type: 'base64', media_type: img.mimeType, data: img.data }
+                })),
+                { type: 'text', text: prompt }
+              ]
+            : prompt;
+
         const message = await anthropic.messages.create({
             model: 'claude-sonnet-4-6',
             max_tokens: 2000,
-            messages: [{
-                role: 'user',
-                content: prompt
-            }]
+            messages: [{ role: 'user', content }]
         });
 
         const responseText = message.content[0].text.trim();
@@ -355,8 +363,10 @@ async function analyzeEmail(emailData, sourceType = 'email') {
     try {
         console.log('🤖 Analyzing email with Claude...');
 
+        const images = emailData.images || [];
+
         const [tasks, category, priority, replyInfo] = await Promise.all([
-            extractTasks(emailData.body, emailData.subject, emailData.from, sourceType),
+            extractTasks(emailData.body, emailData.subject, emailData.from, sourceType, images),
             detectCategory(emailData.body, emailData.subject, emailData.from),
             detectPriority(emailData.body, emailData.subject),
             sourceType === 'email' ? detectNeedsReply(emailData) : Promise.resolve({ needsReply: false, displaySubject: null, customQuestions: [] })
