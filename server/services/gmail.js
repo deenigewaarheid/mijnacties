@@ -115,6 +115,33 @@ async function getMessages(userId, maxResults = 25) {
 }
 
 /**
+ * Parse Dutch Outlook forward header from email body.
+ * Returns { fromEmail, fromName, body } with header stripped, or null if not a forward.
+ *
+ * Matches headers like:
+ *   Van: Name <email>
+ *   Verzonden: dinsdag 26 mei 2026 10:41
+ *   Aan: ...
+ *   Onderwerp: ...
+ */
+function parseForwardedHeader(body) {
+    // Match the Outlook-style Dutch forward header at the start of the body
+    const headerRegex = /^\s*Van:\s*([^\r\n]+)\r?\nVerzonden:[^\r\n]+\r?\nAan:[^\r\n]+\r?\nOnderwerp:[^\r\n]+\r?\n*/i;
+    const match = body.match(headerRegex);
+    if (!match) return null;
+
+    const vanLine = match[1].trim();
+    // Extract email and name from "Name <email>" or plain email
+    const emailMatch = vanLine.match(/^(.*?)\s*<([^>]+)>/);
+    const fromEmail = emailMatch ? emailMatch[2].trim() : vanLine;
+    const fromName  = emailMatch ? emailMatch[1].trim() : '';
+
+    const cleanBody = body.replace(headerRegex, '').trim();
+
+    return { fromEmail, fromName, body: cleanBody };
+}
+
+/**
  * Get full message details
  */
 async function getMessageDetails(messageId) {
@@ -166,13 +193,21 @@ async function getMessageDetails(messageId) {
             return '';
         }
 
-        const body = extractBody(message.payload);
-        
-        // Extract email address and name
+        let body = extractBody(message.payload);
+
+        // Extract email address and name from Gmail headers (= the forwarder)
         const fromMatch = from.match(/(.*?)\s*<(.+?)>/) || [null, from, from];
-        const fromName = fromMatch[1]?.trim() || '';
-        const fromEmail = fromMatch[2]?.trim() || from;
-        
+        let fromName = fromMatch[1]?.trim() || '';
+        let fromEmail = fromMatch[2]?.trim() || from;
+
+        // If this is a forwarded email, extract the original sender and strip the forward header
+        const forwarded = parseForwardedHeader(body);
+        if (forwarded) {
+            fromEmail = forwarded.fromEmail;
+            fromName  = forwarded.fromName;
+            body      = forwarded.body;
+        }
+
         return {
             id: message.id,
             from: fromEmail,
