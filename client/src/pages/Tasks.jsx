@@ -353,7 +353,7 @@ function TaskItem({ task, onToggle, onSubtaskToggle, onDelete, onUpdate, onSubta
   // ── Display mode ──────────────────────────────────────────────────────────
   return (
     <div className={`group relative bg-white dark:bg-gray-900 border border-l-4 ${borderColor} rounded-xl px-4 py-3.5 transition-all duration-200 ${
-      isSelected ? 'border-blue-300 dark:border-blue-600 bg-blue-50 dark:bg-blue-950/20' :
+      isSelected ? 'border-accent-300 dark:border-accent-700 bg-accent-50 dark:bg-accent-950/20' :
       'border-gray-100 dark:border-gray-800 hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-sm'
     } ${isCompleting ? 'opacity-0 scale-95 translate-x-4' : 'opacity-100 scale-100'}`}>
       <div className="flex items-start gap-3">
@@ -365,7 +365,8 @@ function TaskItem({ task, onToggle, onSubtaskToggle, onDelete, onUpdate, onSubta
             checked={isSelected}
             onChange={() => onSelect(task.id)}
             onClick={e => e.stopPropagation()}
-            className="mt-1 w-4 h-4 accent-blue-700 flex-shrink-0 cursor-pointer"
+            className="mt-1 w-4 h-4 flex-shrink-0 cursor-pointer"
+            style={{ accentColor: '#0f6e56' }}
           />
         )}
 
@@ -1175,8 +1176,8 @@ export default function Tasks() {
 
   function groupByCategory(list) {
     const cats = [
-      { key: 'werk',  label: 'Werk',  dot: 'bg-blue-400',    hdr: 'text-blue-700 dark:text-blue-400' },
-      { key: 'privé', label: 'Privé', dot: 'bg-pink-400',    hdr: 'text-pink-700 dark:text-pink-400' },
+      { key: 'werk',  label: 'Werk',  dot: 'bg-accent-400',   hdr: 'text-accent-700 dark:text-accent-400' },
+      { key: 'privé', label: 'Privé', dot: 'bg-pink-400',     hdr: 'text-pink-700 dark:text-pink-400' },
     ]
     const groups = cats.map(c => ({
       ...c,
@@ -1263,14 +1264,14 @@ export default function Tasks() {
             <button key={t.key} onClick={() => setMainTab(t.key)}
               className={`flex items-center gap-1.5 px-4 py-3 text-sm font-medium border-b-2 transition-colors -mb-px whitespace-nowrap ${
                 mainTab === t.key
-                  ? 'border-gray-900 dark:border-gray-100 text-gray-900 dark:text-gray-100'
+                  ? 'border-accent-600 dark:border-accent-400 text-accent-700 dark:text-accent-400'
                   : 'border-transparent text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
               }`}>
               {t.label}
               {count > 0 && (
                 <span className={`text-xs px-1.5 py-0.5 rounded-full leading-none ${
                   mainTab === t.key
-                    ? 'bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900'
+                    ? 'bg-accent-600 dark:bg-accent-500 text-white dark:text-white'
                     : 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400'
                 }`}>{count}</span>
               )}
@@ -1289,7 +1290,7 @@ export default function Tasks() {
                 <button key={f.key} onClick={() => setTab(f.key)}
                   className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                     tab === f.key
-                      ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm'
+                      ? 'bg-white dark:bg-gray-700 text-accent-700 dark:text-accent-400 shadow-sm'
                       : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
                   }`}>
                   {f.icon && <f.icon size={12} />}

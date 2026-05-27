@@ -33,7 +33,7 @@ function PasswordSection() {
   }
 
   return (
-    <div className="bg-white border border-blue-100 rounded-2xl p-6 mb-4">
+    <div className="bg-white border border-gray-200 rounded-xl p-6 mb-4">
       <div className="flex items-center gap-2 mb-4">
         <Lock size={16} className="text-gray-500" />
         <h2 className="font-semibold text-gray-800">Wachtwoord wijzigen</h2>
@@ -46,7 +46,7 @@ function PasswordSection() {
               type={showCurrent ? 'text' : 'password'}
               value={current}
               onChange={e => setCurrent(e.target.value)}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400 pr-9"
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-accent-500 pr-9"
               autoComplete="current-password"
             />
             <button type="button" onClick={() => setShowCurrent(v => !v)}
@@ -62,7 +62,7 @@ function PasswordSection() {
               type={showNext ? 'text' : 'password'}
               value={next}
               onChange={e => setNext(e.target.value)}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400 pr-9"
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-accent-500 pr-9"
               autoComplete="new-password"
             />
             <button type="button" onClick={() => setShowNext(v => !v)}
@@ -77,7 +77,7 @@ function PasswordSection() {
             type="password"
             value={confirm}
             onChange={e => setConfirm(e.target.value)}
-            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400"
+            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-accent-500"
             autoComplete="new-password"
           />
         </div>
@@ -85,7 +85,7 @@ function PasswordSection() {
         {error && <p className="text-xs text-red-600">{error}</p>}
 
         <button type="submit" disabled={saving || !current || !next || !confirm}
-          className="flex items-center gap-2 bg-blue-800 hover:bg-blue-900 disabled:opacity-40 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+          className="flex items-center gap-2 bg-accent-600 hover:bg-accent-700 disabled:opacity-40 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors">
           {success ? <><Check size={14} />Opgeslagen!</> : saving ? 'Opslaan...' : 'Wachtwoord wijzigen'}
         </button>
       </form>
@@ -149,16 +149,16 @@ export default function Settings() {
 
   return (
     <div className="max-w-lg">
-      <h1 className="text-2xl font-bold text-blue-900 mb-8">Instellingen</h1>
+      <h1 className="text-xl font-display font-bold text-gray-900 mb-8">Instellingen</h1>
 
-      <div className="bg-white border border-blue-100 rounded-2xl p-6 mb-4">
+      <div className="bg-white border border-gray-200 rounded-xl p-6 mb-4">
         <h2 className="font-semibold text-gray-800 mb-1">Account</h2>
         <p className="text-sm text-gray-500">{user?.email}</p>
       </div>
 
       <PasswordSection />
 
-      <div className="bg-white border border-blue-100 rounded-2xl p-6 mb-4">
+      <div className="bg-white border border-gray-200 rounded-xl p-6 mb-4">
         <div className="flex items-start justify-between">
           <div>
             <h2 className="font-semibold text-gray-800 mb-1">Gmail verbinden</h2>
@@ -172,7 +172,7 @@ export default function Settings() {
           <button
             onClick={handleGmailConnect}
             disabled={loading || gmailConnected}
-            className="flex items-center gap-2 bg-gray-700 hover:bg-gray-600 disabled:opacity-50 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+            className="flex items-center gap-2 bg-accent-600 hover:bg-accent-700 disabled:opacity-50 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
           >
             <Mail size={14} />
             {gmailConnected ? 'Gmail verbonden' : loading ? 'Bezig...' : 'Verbind Gmail'}
@@ -191,7 +191,7 @@ export default function Settings() {
         {syncResult && <p className="mt-2 text-xs text-gray-500">{syncResult}</p>}
       </div>
 
-      <div className="bg-white border border-blue-100 rounded-2xl p-6">
+      <div className="bg-white border border-gray-200 rounded-xl p-6">
         <h2 className="font-semibold text-gray-800 mb-3">Sessie</h2>
         <button
           onClick={handleLogout}

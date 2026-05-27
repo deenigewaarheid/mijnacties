@@ -8,7 +8,7 @@ function ConfirmDialog({ open, message, onConfirm, onCancel }) {
       className="fixed inset-0 bg-black/40 flex items-center justify-center z-50"
       onClick={e => e.target === e.currentTarget && onCancel()}
     >
-      <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-sm mx-4 p-6">
+      <div className="bg-white dark:bg-gray-900 rounded-xl shadow-2xl w-full max-w-sm mx-4 p-6 border border-gray-200 dark:border-gray-700">
         <div className="flex items-start gap-3 mb-5">
           <div className="w-9 h-9 rounded-full bg-red-50 dark:bg-red-900/20 flex items-center justify-center flex-shrink-0">
             <AlertTriangle size={18} className="text-red-500" />
@@ -18,13 +18,13 @@ function ConfirmDialog({ open, message, onConfirm, onCancel }) {
         <div className="flex gap-2 justify-end">
           <button
             onClick={onCancel}
-            className="px-4 py-2 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
+            className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors font-medium"
           >
             Annuleren
           </button>
           <button
             onClick={onConfirm}
-            className="px-4 py-2 text-sm bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors font-medium"
+            className="px-4 py-2 text-sm bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors font-semibold"
           >
             Verwijderen
           </button>

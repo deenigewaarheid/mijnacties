@@ -34,21 +34,21 @@ Return ALLEEN een JSON array zonder uitleg of markdown:
   }
 
   return (
-    <div className="bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-950/30 dark:to-blue-950/30 border border-purple-100 dark:border-purple-900/50 rounded-xl p-6">
+    <div className="bg-gradient-to-br from-accent-50 to-emerald-50 dark:from-accent-950/20 dark:to-emerald-950/20 border border-accent-100 dark:border-accent-900/50 rounded-xl p-6">
 
       {/* Header */}
       <div className="flex items-center gap-3 mb-4">
-        <div className="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900/50 flex items-center justify-center flex-shrink-0">
-          <Sparkles size={18} className="text-purple-600 dark:text-purple-400" />
+        <div className="w-10 h-10 rounded-full bg-accent-100 dark:bg-accent-900/50 flex items-center justify-center flex-shrink-0">
+          <Sparkles size={18} className="text-accent-600 dark:text-accent-400" />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold text-purple-900 dark:text-purple-200">AI Planningsadvies</p>
-          <p className="text-xs text-purple-500 dark:text-purple-400">Persoonlijke tips op basis van jouw taken</p>
+          <p className="text-sm font-semibold text-accent-900 dark:text-accent-200 font-display">AI Planningsadvies</p>
+          <p className="text-xs text-accent-500 dark:text-accent-400">Persoonlijke tips op basis van jouw taken</p>
         </div>
         <button
           onClick={getInsights}
           disabled={loading}
-          className="flex-shrink-0 text-sm font-medium px-4 py-2 rounded-lg bg-purple-600 hover:bg-purple-700 disabled:opacity-60 disabled:cursor-not-allowed text-white transition-colors"
+          className="flex-shrink-0 text-sm font-semibold px-4 py-2 rounded-lg bg-accent-600 hover:bg-accent-700 disabled:opacity-60 disabled:cursor-not-allowed text-white transition-colors"
         >
           {loading ? 'Aan het analyseren...' : insights ? 'Nieuwe tips' : 'Analyseren'}
         </button>
@@ -61,7 +61,7 @@ Return ALLEEN een JSON array zonder uitleg of markdown:
 
       {/* Empty state */}
       {!insights && !loading && !error && (
-        <p className="text-sm text-purple-400 dark:text-purple-500 text-center py-2">
+        <p className="text-sm text-accent-400 dark:text-accent-500 text-center py-2">
           Klik op "Analyseren" voor persoonlijk advies op basis van jouw {tasks.length} taken.
         </p>
       )}
@@ -71,8 +71,8 @@ Return ALLEEN een JSON array zonder uitleg of markdown:
         <div className="space-y-3">
           {[1, 2, 3].map(i => (
             <div key={i} className="bg-white/60 dark:bg-white/5 rounded-lg p-4 animate-pulse">
-              <div className="h-3 bg-purple-100 dark:bg-purple-900/40 rounded w-2/5 mb-2" />
-              <div className="h-2.5 bg-purple-50 dark:bg-purple-900/20 rounded w-4/5" />
+              <div className="h-3 bg-accent-100 dark:bg-accent-900/40 rounded w-2/5 mb-2" />
+              <div className="h-2.5 bg-accent-50 dark:bg-accent-900/20 rounded w-4/5" />
             </div>
           ))}
         </div>
@@ -84,7 +84,7 @@ Return ALLEEN een JSON array zonder uitleg of markdown:
           {insights.map((insight, i) => {
             const pStyle = PRIORITY_STYLES[insight.priority] ?? PRIORITY_STYLES.low
             return (
-              <div key={i} className="bg-white dark:bg-gray-900/80 border border-purple-100 dark:border-purple-900/40 rounded-lg p-4 flex gap-3">
+              <div key={i} className="bg-white dark:bg-gray-900/80 border border-accent-100 dark:border-accent-900/40 rounded-lg p-4 flex gap-3">
                 <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5 ${pStyle}`}>
                   {i + 1}
                 </div>

@@ -31,13 +31,15 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen bg-blue-50 flex items-center justify-center">
-      <div className="bg-white rounded-2xl shadow-sm border border-blue-100 p-8 w-full max-w-sm">
-        <div className="flex items-center gap-2 text-blue-900 font-bold text-xl mb-6">
-          <Mail size={22} />
-          Mail Analyzer
+    <div className="min-h-screen bg-accent-50 flex items-center justify-center">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 w-full max-w-sm">
+        <div className="flex items-center gap-2.5 mb-6">
+          <div className="w-8 h-8 rounded-lg bg-accent-600 flex items-center justify-center flex-shrink-0">
+            <Mail size={15} className="text-white" />
+          </div>
+          <span className="font-display font-bold text-gray-900 text-lg">Mail Analyzer</span>
         </div>
-        <h2 className="text-lg font-semibold text-gray-800 mb-6">
+        <h2 className="text-base font-semibold text-gray-800 mb-6">
           {isRegister ? 'Account aanmaken' : 'Inloggen'}
         </h2>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -48,7 +50,7 @@ export default function Login() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20 transition-colors"
               placeholder="jouw@email.nl"
             />
           </div>
@@ -59,7 +61,7 @@ export default function Login() {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20 transition-colors"
               placeholder="••••••••"
             />
           </div>
@@ -67,14 +69,14 @@ export default function Login() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-800 hover:bg-blue-900 text-white font-medium py-2 rounded-lg text-sm transition-colors disabled:opacity-50"
+            className="w-full bg-accent-600 hover:bg-accent-700 text-white font-semibold py-2 rounded-lg text-sm transition-colors disabled:opacity-50"
           >
             {loading ? 'Bezig...' : isRegister ? 'Account aanmaken' : 'Inloggen'}
           </button>
         </form>
         <button
           onClick={() => setIsRegister(!isRegister)}
-          className="mt-4 text-sm text-blue-700 hover:underline w-full text-center"
+          className="mt-4 text-sm text-accent-600 hover:text-accent-700 font-medium w-full text-center transition-colors"
         >
           {isRegister ? 'Al een account? Inloggen' : 'Nog geen account? Registreren'}
         </button>

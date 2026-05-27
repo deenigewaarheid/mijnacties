@@ -6,13 +6,13 @@ import { useConfirm } from '../components/ConfirmDialog'
 
 const PRIORITY_COLORS = {
   high: 'bg-red-100 text-red-700',
-  mid:  'bg-yellow-100 text-yellow-700',
-  low:  'bg-green-100 text-green-700',
+  mid:  'bg-amber-100 text-amber-700',
+  low:  'bg-accent-50 text-accent-700',
 }
 const PRIORITY_LABELS = { high: 'Hoog', mid: 'Gemiddeld', low: 'Laag' }
-const CATEGORY_COLORS = { werk: 'bg-blue-100 text-blue-700', 'privé': 'bg-pink-100 text-pink-700' }
+const CATEGORY_COLORS = { werk: 'bg-accent-50 text-accent-700', 'privé': 'bg-pink-100 text-pink-700' }
 const BESTEMMING_COLORS = {
-  actie: 'bg-blue-100 text-blue-700', kalender: 'bg-purple-100 text-purple-700',
+  actie: 'bg-accent-50 text-accent-700', kalender: 'bg-purple-100 text-purple-700',
   project: 'bg-orange-100 text-orange-700', wachten: 'bg-gray-100 text-gray-600',
   ooit: 'bg-gray-50 text-gray-500', weggooien: 'bg-red-50 text-red-500',
 }
@@ -118,20 +118,18 @@ function AnalyzePanel({ onClose, onDone, initialMail }) {
 
   return (
     <div className="fixed inset-0 z-40 flex">
-      {/* Overlay */}
       <div className="flex-1 bg-black/30" onClick={onClose} />
 
-      {/* Panel */}
       <div className="w-full max-w-xl bg-white h-full shadow-2xl flex flex-col overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
           <div>
-            <h2 className="font-semibold text-gray-900">Mail analyseren</h2>
+            <h2 className="font-display font-bold text-gray-900">Mail analyseren</h2>
             <div className="flex items-center gap-2 mt-1">
               {[1, 2, 3].map(n => (
                 <div key={n} className="flex items-center gap-1">
                   <div className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-medium ${
-                    step >= n ? 'bg-blue-800 text-white' : 'bg-gray-200 text-gray-400'
+                    step >= n ? 'bg-accent-600 text-white' : 'bg-gray-200 text-gray-400'
                   }`}>{n}</div>
                   {n < 3 && <ChevronRight size={10} className="text-gray-300" />}
                 </div>
@@ -141,7 +139,7 @@ function AnalyzePanel({ onClose, onDone, initialMail }) {
               </span>
             </div>
           </div>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600"><X size={20} /></button>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 p-1 rounded-md hover:bg-gray-100"><X size={18} /></button>
         </div>
 
         {/* Body */}
@@ -154,7 +152,7 @@ function AnalyzePanel({ onClose, onDone, initialMail }) {
                 {[['text', <FileText size={13} />, 'Tekst plakken'], ['file', <Upload size={13} />, 'Bestand']].map(([key, icon, label]) => (
                   <button key={key} onClick={() => setInputTab(key)}
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                      inputTab === key ? 'bg-white text-blue-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                      inputTab === key ? 'bg-white text-accent-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'
                     }`}>
                     {icon}{label}
                   </button>
@@ -173,23 +171,23 @@ function AnalyzePanel({ onClose, onDone, initialMail }) {
                       )}
                       <textarea required={i === 0} rows={7} value={mail.body} onChange={e => updateMail(i, 'body', e.target.value)}
                         placeholder="Plak hier de volledige mailinhoud..."
-                        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none" />
+                        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20 resize-none transition-colors" />
                       <div className="grid grid-cols-2 gap-2">
                         <input type="text" value={mail.subject} onChange={e => updateMail(i, 'subject', e.target.value)}
                           placeholder="Onderwerp (optioneel)"
-                          className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                          className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-accent-500 transition-colors" />
                         <input type="text" value={mail.from} onChange={e => updateMail(i, 'from', e.target.value)}
                           placeholder="Afzender (optioneel)"
-                          className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                          className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-accent-500 transition-colors" />
                       </div>
                     </div>
                   ))}
                   <button type="button" onClick={() => setMails(ms => [...ms, EMPTY_MAIL()])}
-                    className="flex items-center gap-1 text-sm text-blue-700 hover:text-blue-900">
+                    className="flex items-center gap-1 text-sm text-accent-600 hover:text-accent-700 font-medium">
                     <Plus size={13} />Nog een mail
                   </button>
                   {error && <p className="text-red-500 text-sm">{error}</p>}
-                  <button type="submit" className="w-full bg-blue-800 hover:bg-blue-900 text-white font-medium py-2.5 rounded-lg text-sm transition-colors">
+                  <button type="submit" className="w-full bg-accent-600 hover:bg-accent-700 text-white font-semibold py-2.5 rounded-lg text-sm transition-colors">
                     {mails.filter(m => m.body.trim()).length > 1
                       ? `${mails.filter(m => m.body.trim()).length} mails analyseren`
                       : 'Analyseren met AI'}
@@ -201,14 +199,14 @@ function AnalyzePanel({ onClose, onDone, initialMail }) {
                 <form onSubmit={handleAnalyzeFile} className="space-y-4">
                   <input ref={fileInputRef} type="file" accept=".pdf,.docx" className="hidden" onChange={e => setFile(e.target.files[0] || null)} />
                   {file ? (
-                    <div className="flex items-center gap-3 border border-blue-200 bg-blue-50 rounded-lg px-4 py-3">
-                      <FileText size={16} className="text-blue-700 flex-shrink-0" />
-                      <span className="text-sm text-blue-900 font-medium flex-1 truncate">{file.name}</span>
+                    <div className="flex items-center gap-3 border border-accent-200 bg-accent-50 rounded-lg px-4 py-3">
+                      <FileText size={16} className="text-accent-600 flex-shrink-0" />
+                      <span className="text-sm text-accent-800 font-medium flex-1 truncate">{file.name}</span>
                       <button type="button" onClick={() => setFile(null)} className="text-gray-400 hover:text-red-400"><X size={14} /></button>
                     </div>
                   ) : (
                     <button type="button" onClick={() => fileInputRef.current.click()}
-                      className="w-full border-2 border-dashed border-gray-200 rounded-xl py-8 flex flex-col items-center gap-2 text-gray-400 hover:border-blue-300 hover:text-blue-500 transition-colors">
+                      className="w-full border-2 border-dashed border-gray-200 rounded-xl py-8 flex flex-col items-center gap-2 text-gray-400 hover:border-accent-300 hover:text-accent-500 transition-colors">
                       <Upload size={24} />
                       <span className="text-sm">Klik om PDF of Word te kiezen</span>
                       <span className="text-xs">.pdf of .docx, max 10 MB</span>
@@ -216,12 +214,12 @@ function AnalyzePanel({ onClose, onDone, initialMail }) {
                   )}
                   <div className="grid grid-cols-2 gap-2">
                     <input type="text" value={fileSubject} onChange={e => setFileSubject(e.target.value)} placeholder="Onderwerp"
-                      className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                      className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-accent-500 transition-colors" />
                     <input type="text" value={fileFrom} onChange={e => setFileFrom(e.target.value)} placeholder="Afzender"
-                      className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                      className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-accent-500 transition-colors" />
                   </div>
                   {error && <p className="text-red-500 text-sm">{error}</p>}
-                  <button type="submit" disabled={!file} className="w-full bg-blue-800 hover:bg-blue-900 disabled:bg-gray-300 text-white font-medium py-2.5 rounded-lg text-sm transition-colors">
+                  <button type="submit" disabled={!file} className="w-full bg-accent-600 hover:bg-accent-700 disabled:bg-gray-300 text-white font-semibold py-2.5 rounded-lg text-sm transition-colors">
                     Bestand analyseren
                   </button>
                 </form>
@@ -232,8 +230,8 @@ function AnalyzePanel({ onClose, onDone, initialMail }) {
           {/* Step 2 */}
           {step === 2 && (
             <div className="flex flex-col items-center justify-center h-64">
-              <Loader2 size={36} className="text-blue-700 animate-spin mb-4" />
-              <p className="text-blue-900 font-medium text-sm">{loadingMsg}</p>
+              <Loader2 size={36} className="text-accent-600 animate-spin mb-4" />
+              <p className="text-accent-800 font-medium text-sm">{loadingMsg}</p>
               <p className="text-gray-400 text-xs mt-1">Even geduld</p>
             </div>
           )}
@@ -250,13 +248,13 @@ function AnalyzePanel({ onClose, onDone, initialMail }) {
                 {allTasks.map(task => (
                   <div key={task._id} className={`border rounded-xl p-3 transition-colors ${
                     task.bestemming === 'weggooien' ? 'border-red-100 bg-red-50 opacity-60' :
-                    task.selected ? 'border-blue-200 bg-blue-50' : 'border-gray-200 bg-gray-50 opacity-50'
+                    task.selected ? 'border-accent-200 bg-accent-50' : 'border-gray-200 bg-gray-50 opacity-50'
                   }`}>
                     <div className="flex items-start gap-2">
-                      <input type="checkbox" checked={task.selected} onChange={() => toggleTask(task._id)} className="mt-1 accent-blue-700" />
+                      <input type="checkbox" checked={task.selected} onChange={() => toggleTask(task._id)} className="mt-1" style={{ accentColor: '#0f6e56' }} />
                       <div className="flex-1 min-w-0">
                         <input type="text" value={task.title} onChange={e => updateTask(task._id, 'title', e.target.value)}
-                          className="w-full font-medium text-gray-900 bg-transparent border-b border-transparent hover:border-blue-300 focus:border-blue-500 focus:outline-none text-sm pb-0.5" />
+                          className="w-full font-medium text-gray-900 bg-transparent border-b border-transparent hover:border-accent-300 focus:border-accent-500 focus:outline-none text-sm pb-0.5" />
                         {task.originalTitle && task.originalTitle !== task.title && (
                           <p className="text-xs text-gray-400 mt-0.5 truncate">Origineel: {task.originalTitle}</p>
                         )}
@@ -295,7 +293,7 @@ function AnalyzePanel({ onClose, onDone, initialMail }) {
               Annuleren
             </button>
             <button onClick={handleApprove}
-              className="flex-1 bg-blue-800 hover:bg-blue-900 text-white font-medium py-2.5 rounded-lg text-sm transition-colors flex items-center justify-center gap-2">
+              className="flex-1 bg-accent-600 hover:bg-accent-700 text-white font-semibold py-2.5 rounded-lg text-sm transition-colors flex items-center justify-center gap-2">
               <CheckCircle2 size={15} />
               Opslaan in taken
             </button>
@@ -346,14 +344,14 @@ function MailDetailModal({ mail, onClose, onTasksApproved }) {
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4" onClick={e => e.target === e.currentTarget && onClose()}>
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[85vh] flex flex-col">
+      <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[85vh] flex flex-col border border-gray-200">
         {/* Header */}
         <div className="flex items-start justify-between p-6 border-b border-gray-100">
           <div>
-            <h2 className="font-semibold text-gray-900">{mail.subject}</h2>
-            <p className="text-sm text-blue-600 mt-0.5">{mail.from_email}</p>
+            <h2 className="font-display font-bold text-gray-900">{mail.subject}</h2>
+            <p className="text-sm text-accent-600 mt-0.5">{mail.from_email}</p>
           </div>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600"><X size={20} /></button>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 p-1 rounded-md hover:bg-gray-100"><X size={18} /></button>
         </div>
 
         {/* Badges */}
@@ -367,12 +365,10 @@ function MailDetailModal({ mail, onClose, onTasksApproved }) {
         </div>
 
         <div className="flex-1 overflow-auto p-6 space-y-4">
-          {/* Mail body */}
           {!tasks && (
             <pre className="text-sm text-gray-700 whitespace-pre-wrap font-sans">{mail.body}</pre>
           )}
 
-          {/* Tasks */}
           {tasks && (
             <div className="space-y-2">
               <p className="text-sm text-gray-500">{tasks.filter(t => t.selected).length} taken geselecteerd</p>
@@ -380,13 +376,13 @@ function MailDetailModal({ mail, onClose, onTasksApproved }) {
               {tasks.map(task => (
                 <div key={task._id} className={`border rounded-xl p-3 transition-colors ${
                   task.bestemming === 'weggooien' ? 'border-red-100 bg-red-50 opacity-60' :
-                  task.selected ? 'border-blue-200 bg-blue-50' : 'border-gray-200 bg-gray-50 opacity-50'
+                  task.selected ? 'border-accent-200 bg-accent-50' : 'border-gray-200 bg-gray-50 opacity-50'
                 }`}>
                   <div className="flex items-start gap-2">
-                    <input type="checkbox" checked={task.selected} onChange={() => toggleTask(task._id)} className="mt-1 accent-blue-700" />
+                    <input type="checkbox" checked={task.selected} onChange={() => toggleTask(task._id)} className="mt-1" style={{ accentColor: '#0f6e56' }} />
                     <div className="flex-1 min-w-0">
                       <input type="text" value={task.title} onChange={e => updateTask(task._id, 'title', e.target.value)}
-                        className="w-full font-medium text-gray-900 bg-transparent border-b border-transparent hover:border-blue-300 focus:border-blue-500 focus:outline-none text-sm pb-0.5" />
+                        className="w-full font-medium text-gray-900 bg-transparent border-b border-transparent hover:border-accent-300 focus:border-accent-500 focus:outline-none text-sm pb-0.5" />
                       {task.originalTitle && task.originalTitle !== task.title && (
                         <p className="text-xs text-gray-400 mt-0.5 truncate">Origineel: {task.originalTitle}</p>
                       )}
@@ -419,12 +415,12 @@ function MailDetailModal({ mail, onClose, onTasksApproved }) {
           </button>
           {!tasks ? (
             <button onClick={handleAnalyze} disabled={analyzing}
-              className="flex-1 bg-blue-800 hover:bg-blue-900 disabled:opacity-50 text-white font-medium py-2.5 rounded-lg text-sm transition-colors flex items-center justify-center gap-2">
+              className="flex-1 bg-accent-600 hover:bg-accent-700 disabled:opacity-50 text-white font-semibold py-2.5 rounded-lg text-sm transition-colors flex items-center justify-center gap-2">
               {analyzing ? <><Loader2 size={14} className="animate-spin" />Analyseren...</> : <><ArrowRight size={14} />Taken extraheren</>}
             </button>
           ) : (
             <button onClick={handleApprove} disabled={!tasks.some(t => t.selected)}
-              className="flex-1 bg-blue-800 hover:bg-blue-900 disabled:opacity-50 text-white font-medium py-2.5 rounded-lg text-sm transition-colors flex items-center justify-center gap-2">
+              className="flex-1 bg-accent-600 hover:bg-accent-700 disabled:opacity-50 text-white font-semibold py-2.5 rounded-lg text-sm transition-colors flex items-center justify-center gap-2">
               <CheckCircle2 size={14} />Opslaan in taken
             </button>
           )}
@@ -539,14 +535,22 @@ export default function Inbox() {
     return new Date(dateStr).toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' })
   }
 
+  function senderInitials(email) {
+    if (!email) return '?'
+    const name = email.split('@')[0]
+    const parts = name.split(/[._-]/)
+    if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase()
+    return name.slice(0, 2).toUpperCase()
+  }
+
   return (
     <>
       {confirmDialog}
       <div>
-      <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-bold text-blue-900">Inbox</h1>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-xl font-display font-bold text-gray-900 dark:text-gray-100">Inbox</h1>
         <button onClick={() => setShowAnalyze(true)}
-          className="flex items-center gap-2 bg-blue-800 hover:bg-blue-900 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+          className="flex items-center gap-2 bg-accent-600 hover:bg-accent-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors">
           <Plus size={15} />Mail analyseren
         </button>
       </div>
@@ -554,15 +558,15 @@ export default function Inbox() {
       {gmailConnected && (
         <div className="flex items-center gap-2 mb-5 flex-wrap">
           <button onClick={handleSync} disabled={syncing}
-            className="flex items-center gap-2 border border-gray-200 hover:border-gray-400 text-gray-600 hover:text-gray-900 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors disabled:opacity-50">
+            className="flex items-center gap-2 border border-gray-200 hover:border-gray-300 text-gray-600 hover:text-gray-900 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors disabled:opacity-50">
             <Mail size={13} />{syncing ? 'Synchroniseren...' : 'Sync nu'}
           </button>
           <button onClick={handleReprocess} disabled={reprocessing}
-            className="flex items-center gap-2 border border-gray-200 hover:border-gray-400 text-gray-600 hover:text-gray-900 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors disabled:opacity-50">
+            className="flex items-center gap-2 border border-gray-200 hover:border-gray-300 text-gray-600 hover:text-gray-900 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors disabled:opacity-50">
             <Mail size={13} />{reprocessing ? 'Bezig...' : 'Taken genereren uit mails'}
           </button>
           {successMsg && (
-            <span className="text-xs text-green-600 font-medium flex items-center gap-1">
+            <span className="text-xs text-accent-600 font-medium flex items-center gap-1">
               <CheckCircle2 size={13} />{successMsg}
             </span>
           )}
@@ -573,10 +577,13 @@ export default function Inbox() {
 
       {!loading && mails.length === 0 && (
         <div className="text-center py-16 text-gray-400">
-          <Mail size={40} className="mx-auto mb-3 opacity-40" />
-          <p className="text-sm mb-3">Geen mails. Plak een mail om te beginnen.</p>
+          <div className="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4">
+            <Mail size={24} className="opacity-50" />
+          </div>
+          <p className="font-display font-semibold text-gray-500 mb-1">Geen mails</p>
+          <p className="text-sm mb-4">Plak een mail om te beginnen.</p>
           <button onClick={() => setShowAnalyze(true)}
-            className="flex items-center gap-1.5 mx-auto text-sm text-blue-700 hover:text-blue-900 font-medium">
+            className="inline-flex items-center gap-1.5 text-sm text-accent-600 hover:text-accent-700 font-semibold">
             <ArrowRight size={14} />Mail analyseren
           </button>
         </div>
@@ -586,11 +593,11 @@ export default function Inbox() {
       {selectedMails.size > 0 && (
         <div className="flex items-center gap-3 mb-3 px-4 py-2.5 bg-red-50 border border-red-200 rounded-xl">
           <span className="text-sm text-gray-600 flex-1">{selectedMails.size} geselecteerd</span>
-          <button onClick={() => setSelectedMails(new Set())} className="text-xs text-gray-500 hover:text-gray-700">
+          <button onClick={() => setSelectedMails(new Set())} className="text-xs text-gray-500 hover:text-gray-700 font-medium">
             Deselecteer alles
           </button>
           <button onClick={handleBulkDelete}
-            className="flex items-center gap-1.5 text-xs text-white bg-red-600 hover:bg-red-700 px-3 py-1.5 rounded-lg transition-colors">
+            className="flex items-center gap-1.5 text-xs text-white bg-red-600 hover:bg-red-700 px-3 py-1.5 rounded-lg transition-colors font-semibold">
             <Trash2 size={12} />Verwijder ({selectedMails.size})
           </button>
         </div>
@@ -602,10 +609,10 @@ export default function Inbox() {
           const isSelected = selectedMails.has(mail.id)
           return (
             <div key={mail.id}
-              className={`bg-white border rounded-xl px-4 py-3.5 transition-all ${
-                isSelected ? 'border-blue-300 bg-blue-50' :
-                isApproved ? 'border-green-100 opacity-60' :
-                'border-gray-100 hover:border-blue-200 hover:shadow-sm'
+              className={`bg-white border rounded-xl px-4 py-3 transition-all dark:bg-gray-900 ${
+                isSelected ? 'border-accent-300 bg-accent-50 dark:bg-accent-900/10' :
+                isApproved ? 'border-gray-100 opacity-60 dark:border-gray-700' :
+                'border-gray-200 hover:border-accent-200 hover:shadow-sm dark:border-gray-700'
               }`}>
               <div className="flex items-center gap-3">
                 {/* Multi-select checkbox */}
@@ -614,47 +621,61 @@ export default function Inbox() {
                   checked={isSelected}
                   onChange={() => toggleSelect(mail.id)}
                   onClick={e => e.stopPropagation()}
-                  className="w-4 h-4 accent-blue-700 flex-shrink-0 cursor-pointer"
+                  className="w-4 h-4 flex-shrink-0 cursor-pointer"
+                  style={{ accentColor: '#0f6e56' }}
                 />
+
+                {/* Sender avatar */}
+                <div className="w-8 h-8 rounded-full bg-accent-100 flex items-center justify-center flex-shrink-0 cursor-pointer"
+                  onClick={() => { setAnalyzeMail(mail); setShowAnalyze(true) }}>
+                  <span className="text-xs font-bold text-accent-700 leading-none select-none">
+                    {senderInitials(mail.from_email)}
+                  </span>
+                </div>
+
                 {/* Content */}
                 <div className="min-w-0 flex-1 cursor-pointer" onClick={() => { setAnalyzeMail(mail); setShowAnalyze(true) }}>
-                  <p className="text-xs text-blue-500 mb-0.5 truncate">{mail.from_email}</p>
-                  <p className={`font-medium text-sm truncate ${isApproved ? 'line-through text-gray-400' : 'text-gray-900'}`}>
+                  <p className="text-xs text-gray-400 dark:text-gray-500 truncate">{mail.from_email}</p>
+                  <p className={`font-medium text-sm truncate ${isApproved ? 'line-through text-gray-400' : 'text-gray-900 dark:text-gray-100'}`}>
                     {mail.subject}
                   </p>
                 </div>
+
                 {/* Actions */}
-                <div className="flex items-center gap-2 flex-shrink-0">
-                  <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${PRIORITY_COLORS[mail.priority] || PRIORITY_COLORS.mid}`}>
+                <div className="flex items-center gap-1.5 flex-shrink-0">
+                  <span className={`hidden sm:inline text-xs px-2 py-0.5 rounded-full font-medium ${PRIORITY_COLORS[mail.priority] || PRIORITY_COLORS.mid}`}>
                     {PRIORITY_LABELS[mail.priority] || mail.priority}
                   </span>
-                  <span className={`text-xs px-2 py-0.5 rounded-full ${CATEGORY_COLORS[mail.category] || 'bg-gray-100 text-gray-500'}`}>
+                  <span className={`hidden sm:inline text-xs px-2 py-0.5 rounded-full ${CATEGORY_COLORS[mail.category] || 'bg-gray-100 text-gray-500'}`}>
                     {mail.category}
                   </span>
-                  <span className="text-xs text-gray-400">{formatDate(mail.received_at)}</span>
+                  <span className="text-xs text-gray-400 hidden md:inline">{formatDate(mail.received_at)}</span>
+
                   {/* Processed toggle */}
                   <button
                     onClick={e => toggleProcessed(e, mail.id, mail.status)}
                     title={isApproved ? 'Markeer als ongelezen' : 'Markeer als afgehandeld'}
-                    className={`w-6 h-6 rounded-full border flex items-center justify-center transition-colors ${
+                    className={`w-7 h-7 rounded-full border flex items-center justify-center transition-colors ${
                       isApproved
-                        ? 'bg-green-500 border-green-500 text-white'
-                        : 'border-gray-300 text-gray-300 hover:border-green-400 hover:text-green-500'
+                        ? 'bg-accent-500 border-accent-500 text-white'
+                        : 'border-gray-300 text-gray-300 hover:border-accent-400 hover:text-accent-500'
                     }`}>
-                    <Check size={11} />
+                    <Check size={12} />
                   </button>
+
                   {/* Mailmaker toggle */}
                   <button
                     onClick={e => toggleMailmaker(e, mail.id, mail.needs_reply)}
                     title={mail.needs_reply ? 'In Mailmaker — klik om te verwijderen' : 'Toevoegen aan Mailmaker'}
                     className={`text-xs px-2 py-0.5 rounded-full border transition-colors ${
                       mail.needs_reply
-                        ? 'bg-blue-900 border-blue-900 text-white'
-                        : 'border-gray-200 text-gray-400 hover:border-blue-400 hover:text-blue-600'
+                        ? 'bg-accent-600 border-accent-600 text-white'
+                        : 'border-gray-200 text-gray-400 hover:border-accent-400 hover:text-accent-600'
                     }`}>
                     ✉
                   </button>
-                  <button onClick={e => handleDelete(e, mail.id)} className="text-gray-300 hover:text-red-500 transition-colors">
+
+                  <button onClick={e => handleDelete(e, mail.id)} className="text-gray-300 hover:text-red-500 transition-colors p-1 rounded-md hover:bg-red-50">
                     <Trash2 size={14} />
                   </button>
                 </div>

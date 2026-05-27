@@ -22,9 +22,9 @@ function isToday(dateStr) {
 function StatCard({ value, label, onClick }) {
   return (
     <div onClick={onClick}
-      className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-5 py-4 cursor-pointer hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-sm transition-all">
+      className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-5 py-4 cursor-pointer hover:border-accent-300 dark:hover:border-accent-700 hover:shadow-sm transition-all">
       <p className="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wide mb-1">{label}</p>
-      <p className="text-3xl font-semibold text-gray-900 dark:text-gray-100">{value}</p>
+      <p className="text-3xl font-display font-bold text-gray-900 dark:text-gray-100">{value}</p>
     </div>
   )
 }
@@ -71,11 +71,11 @@ function ProductivityInsights({ tasks }) {
       label: 'Voltooiing',
       value: `${voltPct}%`,
       sub: `${done.length} van ${tasks.length} taken afgerond`,
-      bg:     'from-blue-50 to-indigo-50',
-      border: 'border-blue-100',
-      icon_c: 'text-blue-500',
-      num_c:  'text-blue-700',
-      lbl_c:  'text-blue-600',
+      bg:     'from-accent-50 to-accent-100',
+      border: 'border-accent-100',
+      icon_c: 'text-accent-600',
+      num_c:  'text-accent-700',
+      lbl_c:  'text-accent-600',
     },
     {
       icon: Target,
@@ -93,11 +93,11 @@ function ProductivityInsights({ tasks }) {
       label: 'Gemiddeld / dag',
       value: gemiddeld,
       sub: `${recentDone.length} taken voltooid in 7 dagen`,
-      bg:     'from-emerald-50 to-green-50',
-      border: 'border-emerald-100',
-      icon_c: 'text-emerald-500',
-      num_c:  'text-emerald-700',
-      lbl_c:  'text-emerald-600',
+      bg:     'from-accent-50 to-emerald-50',
+      border: 'border-accent-100',
+      icon_c: 'text-accent-500',
+      num_c:  'text-accent-700',
+      lbl_c:  'text-accent-600',
     },
     {
       icon: AlertCircle,
@@ -138,13 +138,13 @@ function ProductivityInsights({ tasks }) {
         </div>
         <div className="h-2 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden mb-2">
           <div
-            className="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full transition-all duration-500"
+            className="h-full bg-gradient-to-r from-accent-500 to-accent-600 rounded-full transition-all duration-500"
             style={{ width: `${weekPct}%` }}
           />
         </div>
         <div className="flex items-center gap-4 text-xs text-gray-400">
           <span className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-blue-400 flex-shrink-0" />
+            <span className="w-2 h-2 rounded-full bg-accent-400 flex-shrink-0" />
             {completedWeek} voltooid
           </span>
           <span className="flex items-center gap-1.5">
@@ -168,7 +168,7 @@ function DashTaskCard({ task }) {
       <div className="flex-1 min-w-0">
         <p className="text-sm text-gray-900 dark:text-gray-100 truncate">{task.title}</p>
         <div className="flex items-center gap-1.5 flex-wrap">
-          {task.context      && <span className="text-xs text-indigo-500 dark:text-indigo-400">{task.context}</span>}
+          {task.context      && <span className="text-xs text-accent-600 dark:text-accent-400">{task.context}</span>}
           {task.energie      && <span className="text-xs text-gray-400 dark:text-gray-500 inline-flex items-center gap-0.5">{task.energie === 'hoog' ? <Flame size={10} /> : task.energie === 'laag' ? <Moon size={10} /> : <Zap size={10} />}{task.energie}</span>}
           {task.tijd_minuten && <span className="text-xs text-gray-400 dark:text-gray-500">⏱{task.tijd_minuten}m</span>}
           {isOverdue         && <span className="text-xs text-red-500 font-medium">{Math.abs(dl)}d te laat</span>}
@@ -200,7 +200,7 @@ function DashProjectRow({ task }) {
         <span className="text-xs text-gray-400 dark:text-gray-500 font-mono">{pct}%</span>
       </div>
       <div className="ml-4 h-1 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
-        <div className="h-full bg-blue-500 rounded-full transition-all" style={{ width: `${pct}%` }} />
+        <div className="h-full bg-accent-500 rounded-full transition-all" style={{ width: `${pct}%` }} />
       </div>
       <div className="ml-4 flex gap-2 mt-0.5">
         <span className="text-xs text-gray-400 dark:text-gray-500">{total - done} open</span>
@@ -211,12 +211,12 @@ function DashProjectRow({ task }) {
 }
 
 const SECTION_COLORS = {
-  blue:   { bg: 'bg-blue-100 dark:bg-blue-900/30',    icon: 'text-blue-600 dark:text-blue-400' },
-  green:  { bg: 'bg-green-100 dark:bg-green-900/30',  icon: 'text-green-600 dark:text-green-400' },
-  gray:   { bg: 'bg-gray-100 dark:bg-gray-800',        icon: 'text-gray-500 dark:text-gray-400' },
-  red:    { bg: 'bg-red-100 dark:bg-red-900/30',       icon: 'text-red-600 dark:text-red-400' },
-  orange: { bg: 'bg-orange-100 dark:bg-orange-900/30', icon: 'text-orange-600 dark:text-orange-400' },
-  violet: { bg: 'bg-violet-100 dark:bg-violet-900/30', icon: 'text-violet-600 dark:text-violet-400' },
+  blue:   { bg: 'bg-accent-50 dark:bg-accent-900/20',   icon: 'text-accent-600 dark:text-accent-400' },
+  green:  { bg: 'bg-accent-50 dark:bg-accent-900/20',   icon: 'text-accent-600 dark:text-accent-400' },
+  gray:   { bg: 'bg-gray-100 dark:bg-gray-800',          icon: 'text-gray-500 dark:text-gray-400' },
+  red:    { bg: 'bg-red-100 dark:bg-red-900/30',         icon: 'text-red-600 dark:text-red-400' },
+  orange: { bg: 'bg-orange-100 dark:bg-orange-900/30',   icon: 'text-orange-600 dark:text-orange-400' },
+  violet: { bg: 'bg-violet-100 dark:bg-violet-900/30',   icon: 'text-violet-600 dark:text-violet-400' },
 }
 
 function CollapsibleSection({ icon: Icon, title, color, tasks, expanded, onToggle, renderItem }) {
@@ -580,7 +580,7 @@ export default function Dashboard() {
       ) : (
         <>
       <div className="mb-6">
-        <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Dashboard</h1>
+        <h1 className="text-xl font-display font-bold text-gray-900 dark:text-gray-100">Dashboard</h1>
       </div>
 
       {/* Productivity Insights */}
@@ -596,14 +596,14 @@ export default function Dashboard() {
 
       {/* Inbox banner */}
       {inboxCount > 0 && (
-        <div className="bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-xl px-5 py-4 mb-6 flex items-center gap-4">
-          <Mail size={20} className="text-blue-600 dark:text-blue-400 flex-shrink-0" />
+        <div className="bg-accent-50 dark:bg-accent-700/10 border border-accent-100 dark:border-accent-700/30 rounded-xl px-5 py-4 mb-6 flex items-center gap-4">
+          <Mail size={20} className="text-accent-600 dark:text-accent-400 flex-shrink-0" />
           <div className="flex-1">
-            <p className="font-semibold text-blue-800 dark:text-blue-300 text-sm">Je inbox heeft {inboxCount} onverwerkte mail(s)</p>
-            <p className="text-xs text-blue-500 dark:text-blue-400 mt-0.5">Verwerk je inbox om mentale rust te houden.</p>
+            <p className="font-semibold text-accent-800 dark:text-accent-300 text-sm">Je inbox heeft {inboxCount} onverwerkte mail(s)</p>
+            <p className="text-xs text-accent-600 dark:text-accent-400 mt-0.5">Verwerk je inbox om mentale rust te houden.</p>
           </div>
           <button onClick={() => navigate('/inbox')}
-            className="flex items-center gap-1 text-sm text-blue-700 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-200 font-medium transition-colors flex-shrink-0">
+            className="flex items-center gap-1 text-sm text-accent-700 dark:text-accent-400 hover:text-accent-900 dark:hover:text-accent-200 font-semibold transition-colors flex-shrink-0">
             Verwerken <ArrowRight size={14} />
           </button>
         </div>
