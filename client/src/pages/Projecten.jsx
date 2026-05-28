@@ -29,7 +29,7 @@ function ProjectCard({ task, onSubtaskToggle }) {
   const pct      = total > 0 ? Math.round((done / total) * 100) : 0
 
   return (
-    <div className="bg-white border border-gray-100 rounded-lg overflow-hidden hover:border-blue-200 transition-colors">
+    <div className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:border-accent-200 transition-colors">
       <div className="px-4 py-2.5 flex items-center gap-3 cursor-pointer" onClick={() => setOpen(o => !o)}>
         <div className="flex-shrink-0 text-gray-300">
           {open ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
@@ -38,7 +38,7 @@ function ProjectCard({ task, onSubtaskToggle }) {
         {total > 0 && (
           <div className="flex items-center gap-2 flex-shrink-0 w-32">
             <div className="flex-1 h-1 bg-gray-100 rounded-full overflow-hidden">
-              <div className="h-full bg-blue-500 rounded-full transition-all" style={{ width: `${pct}%` }} />
+              <div className="h-full bg-accent-500 rounded-full transition-all" style={{ width: `${pct}%` }} />
             </div>
             <span className="text-xs text-gray-400 font-mono w-8 text-right">{done}/{total}</span>
           </div>
@@ -52,7 +52,7 @@ function ProjectCard({ task, onSubtaskToggle }) {
       </div>
 
       {open && (
-        <div className="border-t border-gray-50 px-8 py-2 bg-gray-50">
+        <div className="border-t border-gray-100 px-8 py-2 bg-gray-50 dark:bg-gray-800/50">
           {subtasks.length === 0
             ? <p className="text-xs text-gray-400 py-1">Geen subtaken</p>
             : subtasks.map(s => (
@@ -87,7 +87,7 @@ export default function Projecten() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-blue-900 mb-5">Projecten</h1>
+      <h1 className="text-xl font-display font-bold text-gray-900 dark:text-gray-100 mb-5">Projecten</h1>
 
       {loading && <p className="text-gray-400 text-sm">Laden...</p>}
 

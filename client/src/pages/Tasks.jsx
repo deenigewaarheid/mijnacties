@@ -24,8 +24,7 @@ function isAutoFocus(task) {
 
 function fmtDate(iso) {
   if (!iso) return ''
-  const [y, m, d] = String(iso).slice(0, 10).split('-')
-  return `${parseInt(d)}/${m}/${y}`
+  return new Date(iso + 'T00:00:00').toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' })
 }
 
 function DateInput({ value, onChange, className }) {
@@ -380,27 +379,9 @@ function TaskItem({ task, onToggle, onSubtaskToggle, onDelete, onUpdate, onSubta
 
         {/* Body */}
         <div className="flex-1 min-w-0">
-
-          {/* Title + deadline */}
-          <div className="flex items-baseline gap-2 flex-wrap">
-            <span className={`text-sm font-medium leading-snug transition-all duration-300 ${task.completed ? 'line-through text-gray-400 dark:text-gray-600' : 'text-gray-900 dark:text-gray-100'}`}>
-              {task.title}
-            </span>
-            {task.deadline && (
-              <span className={`inline-flex items-center gap-1 text-xs flex-shrink-0 tabular-nums ${
-                isOverdue ? 'text-red-500 font-semibold' :
-                dl === 0   ? 'text-orange-500 font-medium' :
-                dl === 1   ? 'text-amber-500 font-medium' :
-                             'text-gray-400 dark:text-gray-500'
-              }`}>
-                {isOverdue && <AlertCircle size={11} />}
-                {isOverdue ? `${Math.abs(dl)}d verlopen` :
-                 dl === 0  ? 'vandaag' :
-                 dl === 1  ? 'morgen' :
-                             `· ${fmtDate(task.deadline)}`}
-              </span>
-            )}
-          </div>
+          <span className={`text-sm font-medium leading-snug transition-all duration-300 ${task.completed ? 'line-through text-gray-400 dark:text-gray-600' : 'text-gray-900 dark:text-gray-100'}`}>
+            {task.title}
+          </span>
 
           {/* Meta row — only filled fields */}
           {hasMeta && (
@@ -440,9 +421,8 @@ function TaskItem({ task, onToggle, onSubtaskToggle, onDelete, onUpdate, onSubta
                   ? `${openSubs} van ${subs.length} subtaken`
                   : `${subs.length} subtaken ✓`}
               </span>
-              {/* Mini progress bar */}
               <div className="w-16 h-1 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden ml-1">
-                <div className="h-full bg-green-400 rounded-full transition-all"
+                <div className="h-full bg-accent-400 rounded-full transition-all"
                   style={{ width: `${Math.round(((subs.length - openSubs) / subs.length) * 100)}%` }} />
               </div>
             </button>
@@ -461,21 +441,44 @@ function TaskItem({ task, onToggle, onSubtaskToggle, onDelete, onUpdate, onSubta
           )}
         </div>
 
-        {/* Actions — visible on hover */}
-        <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0 mt-0.5">
-          <button onClick={e => { e.stopPropagation(); onFocusToggle(task.id, !task.focus) }}
-            title={task.focus ? 'Verwijder uit focus' : 'Voeg toe aan focus'}
-            className={`p-1.5 rounded-lg transition-colors ${isFocused ? 'text-orange-400' : 'text-gray-300 hover:text-orange-400'}`}>
-            <Target size={14} fill={isFocused ? 'currentColor' : 'none'} />
-          </button>
-          <button onClick={startEdit}
-            className="p-1.5 rounded-lg text-gray-300 hover:text-gray-600 dark:hover:text-gray-400 transition-colors">
-            <Pencil size={14} />
-          </button>
-          <button onClick={e => { e.stopPropagation(); onDelete(task.id) }}
-            className="p-1.5 rounded-lg text-gray-300 hover:text-red-400 transition-colors">
-            <Trash2 size={14} />
-          </button>
+        {/* Right: deadline + priority chip + hover actions */}
+        <div className="flex-shrink-0 flex flex-col items-end gap-1 mt-0.5">
+          <div className="flex items-center gap-1">
+            {task.deadline && (
+              <span className={`text-xs tabular-nums flex items-center gap-1 ${
+                isOverdue ? 'text-red-500 font-semibold' :
+                dl === 0   ? 'text-orange-500 font-medium' :
+                dl === 1   ? 'text-amber-500 font-medium' :
+                             'text-gray-400 dark:text-gray-500'
+              }`}>
+                {isOverdue && <AlertCircle size={10} />}
+                {isOverdue ? `${Math.abs(dl)} d te laat` :
+                 dl === 0  ? 'vandaag' :
+                 dl === 1  ? 'morgen' :
+                             fmtDate(task.deadline)}
+              </span>
+            )}
+            <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+              <button onClick={e => { e.stopPropagation(); onFocusToggle(task.id, !task.focus) }}
+                title={task.focus ? 'Verwijder uit focus' : 'Voeg toe aan focus'}
+                className={`p-1.5 rounded-lg transition-colors ${isFocused ? 'text-orange-400' : 'text-gray-300 hover:text-orange-400'}`}>
+                <Target size={14} fill={isFocused ? 'currentColor' : 'none'} />
+              </button>
+              <button onClick={startEdit}
+                className="p-1.5 rounded-lg text-gray-300 hover:text-gray-600 dark:hover:text-gray-400 transition-colors">
+                <Pencil size={14} />
+              </button>
+              <button onClick={e => { e.stopPropagation(); onDelete(task.id) }}
+                className="p-1.5 rounded-lg text-gray-300 hover:text-red-400 transition-colors">
+                <Trash2 size={14} />
+              </button>
+            </div>
+          </div>
+          {task.priority === 'high' && !task.completed && (
+            <span className={`text-xs px-1.5 py-0.5 rounded-md font-medium ${PRIO_CHIP.high}`}>
+              {PRIO_LABEL.high}
+            </span>
+          )}
         </div>
       </div>
     </div>
@@ -664,7 +667,7 @@ function WachtenTab() {
           placeholder="Wacht op..." lang="nl"
           className="flex-1 text-sm border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 focus:outline-none focus:border-gray-400 bg-transparent text-gray-800 dark:text-gray-200" />
         <button type="submit" disabled={adding || !newTitle.trim()}
-          className="text-sm bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 px-4 py-2.5 rounded-xl hover:bg-gray-700 disabled:opacity-40 transition-colors font-medium">
+          className="text-sm bg-accent-600 hover:bg-accent-700 text-white px-4 py-2.5 rounded-xl disabled:opacity-40 transition-colors font-semibold">
           + Toevoegen
         </button>
       </form>
@@ -756,7 +759,7 @@ function OoitTab() {
           placeholder="Idee of taak toevoegen..." lang="nl"
           className="flex-1 text-sm border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 focus:outline-none focus:border-gray-400 bg-transparent text-gray-800 dark:text-gray-200" />
         <button type="submit" disabled={adding || !newTitle.trim()}
-          className="text-sm bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 px-4 py-2.5 rounded-xl hover:bg-gray-700 disabled:opacity-40 transition-colors font-medium">
+          className="text-sm bg-accent-600 hover:bg-accent-700 text-white px-4 py-2.5 rounded-xl disabled:opacity-40 transition-colors font-semibold">
           + Toevoegen
         </button>
       </form>
@@ -829,7 +832,7 @@ function LosseEindjesTab({ onProcessed }) {
   }
 
   const BESTEMMINGEN = [
-    { key: 'actie',   label: 'Actie',  cls: 'bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 hover:bg-gray-700' },
+    { key: 'actie',   label: 'Actie',  cls: 'bg-accent-600 text-white hover:bg-accent-700' },
     { key: 'wachten', label: 'Wachten', cls: 'bg-yellow-50 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 hover:bg-yellow-100 border border-yellow-200' },
     { key: 'ooit',    label: 'Ooit',    cls: 'bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 hover:bg-purple-100 border border-purple-200' },
   ]
@@ -1353,7 +1356,7 @@ export default function Tasks() {
                       Annuleren
                     </button>
                     <button type="submit" disabled={saving || !form.title.trim()}
-                      className="text-sm bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 px-4 py-1.5 rounded-lg hover:bg-gray-700 disabled:opacity-40 transition-colors font-medium">
+                      className="text-sm bg-accent-600 hover:bg-accent-700 text-white px-4 py-1.5 rounded-lg disabled:opacity-40 transition-colors font-semibold">
                       {saving ? 'Opslaan...' : 'Toevoegen'}
                     </button>
                   </div>

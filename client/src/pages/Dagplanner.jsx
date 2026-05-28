@@ -14,7 +14,7 @@ const PRIO_NL = { high: 'Hoog', mid: 'Gemiddeld', low: 'Laag' }
 
 function SectionHeader({ emoji, title }) {
   return (
-    <h2 className="text-sm font-bold uppercase tracking-wide mb-3 pb-2 border-b-2 border-gray-400">
+    <h2 className="text-sm font-bold uppercase tracking-wide mb-3 pb-2 border-b-2 border-accent-200 dark:border-accent-700 text-gray-700 dark:text-gray-300">
       {emoji} {title}
     </h2>
   )
@@ -77,7 +77,7 @@ export default function Dagplanner() {
     return (
       <div className="flex items-center justify-center py-32">
         <div className="text-center">
-          <div className="w-8 h-8 border-2 border-blue-400 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+          <div className="w-8 h-8 border-2 border-accent-500 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
           <p className="text-sm text-gray-400">Dagplanner laden...</p>
         </div>
       </div>
@@ -136,22 +136,22 @@ export default function Dagplanner() {
   function isChecked(key) { return checkedIds.has(String(key)) }
 
   return (
-    <div className="max-w-4xl mx-auto bg-white p-8">
+    <div className="max-w-4xl mx-auto bg-white dark:bg-gray-900 p-8">
 
       {/* ── Header (screen only) ── */}
-      <div className="no-print mb-8 bg-white rounded-2xl shadow-sm border border-gray-100 px-8 pt-8 pb-6">
+      <div className="no-print mb-8 bg-white rounded-xl shadow-sm border border-gray-200 dark:bg-gray-900 dark:border-gray-700 px-8 pt-8 pb-6">
         <div className="flex items-start justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <CalendarDays size={20} className="text-blue-500 flex-shrink-0" />
-              <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Dagplanner</h1>
+              <CalendarDays size={20} className="text-accent-600 flex-shrink-0" />
+              <h1 className="text-xl font-display font-bold text-gray-900 dark:text-gray-100 tracking-tight">Dagplanner</h1>
             </div>
-            <p className="text-sm text-gray-600 capitalize">{fmtDatum(planDate)}</p>
-            <p className="text-xs text-gray-400 mb-3">GTD Productiviteitssysteem</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 capitalize">{fmtDatum(planDate)}</p>
+            <p className="text-xs text-gray-400 dark:text-gray-500 mb-3">GTD Productiviteitssysteem</p>
 
             <div className="flex flex-wrap gap-2">
-              <div className="flex items-center gap-1.5 text-xs text-gray-600 bg-zinc-100 rounded-lg px-3 py-1.5">
-                <Target size={11} className="text-blue-500" />
+              <div className="flex items-center gap-1.5 text-xs text-accent-700 bg-accent-50 dark:bg-accent-700/10 dark:text-accent-300 rounded-lg px-3 py-1.5">
+                <Target size={11} className="text-accent-500" />
                 <span><strong>{data.today.length}</strong> taken vandaag</span>
               </div>
               {(data.deadlines.length + data.overdue.length) > 0 && (
@@ -161,7 +161,7 @@ export default function Dagplanner() {
                 </div>
               )}
               {totalMin > 0 && (
-                <div className="flex items-center gap-1.5 text-xs text-gray-500 bg-zinc-100 rounded-lg px-3 py-1.5">
+                <div className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 rounded-lg px-3 py-1.5">
                   <Clock size={11} />
                   <span>{uurStr}{minStr} ingepland</span>
                 </div>
@@ -196,8 +196,8 @@ export default function Dagplanner() {
 
         {/* Vandaag */}
         <section className="section mb-8">
-          <div className="flex items-center justify-between mb-3 pb-2 border-b-2 border-gray-400">
-            <h2 className="text-sm font-bold uppercase tracking-wide">📅 VANDAAG</h2>
+          <div className="flex items-center justify-between mb-3 pb-2 border-b-2 border-accent-200 dark:border-accent-700">
+            <h2 className="text-sm font-bold uppercase tracking-wide text-gray-700 dark:text-gray-300">📅 VANDAAG</h2>
             <div className="no-print relative inline-flex items-center">
               <span className="text-xs border border-gray-300 rounded-lg px-2.5 py-1.5 pr-7 bg-white text-gray-700 select-none">
                 {(() => { const [y,m,d] = planDate.split('-'); return `${d}/${m}/${y}` })()}
@@ -223,6 +223,7 @@ export default function Dagplanner() {
                     <input
                       type="checkbox"
                       className="mt-0.5 flex-shrink-0"
+                      style={{ accentColor: '#0f6e56' }}
                       checked={checked}
                       onChange={e => handleCheck(task, e.target.checked)}
                     />
@@ -247,6 +248,7 @@ export default function Dagplanner() {
                               <input
                                 type="checkbox"
                                 className="mt-0.5 flex-shrink-0"
+                                style={{ accentColor: '#0f6e56' }}
                                 checked={subChecked}
                                 onChange={e => handleCheck(task, e.target.checked, s.id)}
                               />
@@ -277,6 +279,7 @@ export default function Dagplanner() {
                     <input
                       type="checkbox"
                       className="mt-0.5 flex-shrink-0"
+                      style={{ accentColor: '#0f6e56' }}
                       checked={checked}
                       onChange={e => handleCheck(item, e.target.checked)}
                     />
@@ -305,6 +308,7 @@ export default function Dagplanner() {
                       <input
                         type="checkbox"
                         className="mt-0.5 flex-shrink-0"
+                        style={{ accentColor: '#0f6e56' }}
                         checked={checked}
                         onChange={e => handleCheck(task, e.target.checked)}
                       />
@@ -329,8 +333,8 @@ export default function Dagplanner() {
       </div>
 
       {/* Visual page divider (screen only) */}
-      <div className="no-print relative border-t-2 border-dashed border-gray-300 my-8">
-        <span className="absolute left-1/2 -translate-x-1/2 -top-2.5 px-3 bg-white text-xs text-gray-400">
+      <div className="no-print relative border-t-2 border-dashed border-accent-200 dark:border-accent-700 my-8">
+        <span className="absolute left-1/2 -translate-x-1/2 -top-2.5 px-3 bg-white dark:bg-gray-900 text-xs text-gray-400 dark:text-gray-500">
           Pagina 2
         </span>
       </div>
@@ -352,6 +356,7 @@ export default function Dagplanner() {
                     <input
                       type="checkbox"
                       className="mt-0.5 flex-shrink-0"
+                      style={{ accentColor: '#0f6e56' }}
                       checked={checked}
                       onChange={e => handleCheck(task, e.target.checked)}
                     />
@@ -397,7 +402,7 @@ export default function Dagplanner() {
             onChange={e => setNotities(e.target.value)}
             placeholder="Schrijf hier losse gedachten, ideeën of aantekeningen voor vandaag..."
             rows={6}
-            className="no-print w-full text-sm text-gray-700 border border-gray-300 rounded px-3 py-2 resize-none focus:outline-none focus:border-gray-500 placeholder-gray-300 leading-relaxed transition-colors"
+            className="no-print w-full text-sm text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 resize-none focus:outline-none focus:border-accent-500 dark:focus:border-accent-500 placeholder-gray-300 dark:placeholder-gray-600 bg-white dark:bg-gray-800 leading-relaxed transition-colors"
           />
           <div className="print-only mt-4 space-y-3">
             {[1, 2, 3, 4, 5].map(i => (

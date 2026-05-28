@@ -29,7 +29,7 @@ function ChipSelect({ options, value, onChange }) {
           onClick={() => onChange(opt.toLowerCase())}
           className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
             value === opt.toLowerCase()
-              ? 'bg-blue-900 border-blue-900 text-white'
+              ? 'bg-accent-600 border-accent-600 text-white'
               : 'bg-white border-gray-200 text-gray-600 hover:border-gray-400 hover:text-gray-900'
           }`}
         >
@@ -62,7 +62,7 @@ function CustomQuestion({ question, value, onChange }) {
         value={value || ''}
         onChange={e => onChange(e.target.value)}
         placeholder="Jouw antwoord..."
-        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400"
+        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-accent-500"
       />
     </div>
   )
@@ -174,7 +174,7 @@ function MailTab({ mail, onReplied }) {
             onChange={e => setSpecifiek(e.target.value)}
             placeholder="Bijv. verwijs naar ons gesprek van dinsdag, noem de deadline van vrijdag..."
             rows={2}
-            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400 resize-none"
+            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-accent-500 resize-none"
           />
         </div>
       </div>
@@ -182,7 +182,7 @@ function MailTab({ mail, onReplied }) {
       <button
         onClick={handleGenerate}
         disabled={!doel || generating}
-        className="flex items-center gap-2 bg-blue-900 hover:bg-blue-800 disabled:opacity-40 text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-colors"
+        className="flex items-center gap-2 bg-accent-600 hover:bg-accent-700 disabled:opacity-40 text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition-colors"
       >
         {generating ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
         {generating ? 'Genereren...' : 'Antwoord genereren'}
@@ -190,13 +190,13 @@ function MailTab({ mail, onReplied }) {
 
       {/* Generated reply */}
       {reply && (
-        <div className="border border-blue-100 rounded-xl overflow-hidden">
-          <div className="flex items-center justify-between px-4 py-2.5 bg-blue-50 border-b border-blue-100">
-            <p className="text-xs font-semibold text-blue-900 uppercase tracking-wider">Gegenereerd antwoord</p>
+        <div className="border border-accent-100 rounded-xl overflow-hidden">
+          <div className="flex items-center justify-between px-4 py-2.5 bg-accent-50 border-b border-accent-100">
+            <p className="text-xs font-semibold text-accent-900 uppercase tracking-wider">Gegenereerd antwoord</p>
             <div className="flex items-center gap-2">
               <button
                 onClick={handleCopy}
-                className="flex items-center gap-1.5 text-xs text-blue-700 hover:text-blue-900 transition-colors"
+                className="flex items-center gap-1.5 text-xs text-accent-700 hover:text-accent-900 transition-colors"
               >
                 {copied ? <Check size={13} /> : <Copy size={13} />}
                 {copied ? 'Gekopieerd!' : 'Kopiëren'}
@@ -253,8 +253,8 @@ export default function Mailmaker() {
   if (mails.length === 0) {
     return (
       <div className="max-w-2xl">
-        <h1 className="text-2xl font-bold text-blue-900 dark:text-blue-300 mb-8">Mailmaker</h1>
-        <div className="bg-white border border-blue-100 rounded-2xl p-10 text-center">
+        <h1 className="text-xl font-display font-bold text-gray-900 dark:text-gray-100 mb-8">Mailmaker</h1>
+        <div className="bg-white border border-gray-200 rounded-xl p-10 text-center">
           <p className="text-gray-500 text-sm">Geen mails die een antwoord vereisen.</p>
           <p className="text-gray-400 text-xs mt-1">Nieuwe mails worden hier getoond zodra AI detecteert dat ze een antwoord nodig hebben.</p>
         </div>
@@ -266,7 +266,7 @@ export default function Mailmaker() {
 
   return (
     <div className="max-w-2xl">
-      <h1 className="text-2xl font-bold text-blue-900 dark:text-blue-300 mb-6">Mailmaker</h1>
+      <h1 className="text-xl font-display font-bold text-gray-900 dark:text-gray-100 mb-6">Mailmaker</h1>
 
       {/* Tabs */}
       <div className="flex gap-1 overflow-x-auto pb-0.5 mb-6 -mx-1 px-1">
@@ -279,7 +279,7 @@ export default function Mailmaker() {
               onClick={() => setActiveTab(i)}
               className={`flex-shrink-0 px-3.5 py-2 rounded-t-lg text-xs font-medium border-b-2 transition-colors whitespace-nowrap ${
                 activeTab === i
-                  ? 'border-blue-900 text-blue-900 bg-white dark:bg-gray-900'
+                  ? 'border-accent-600 text-accent-700 bg-white dark:bg-gray-900'
                   : 'border-transparent text-gray-400 hover:text-gray-700 hover:border-gray-300'
               }`}
             >
@@ -289,7 +289,7 @@ export default function Mailmaker() {
         })}
       </div>
 
-      <div className="bg-white border border-blue-100 rounded-2xl p-6">
+      <div className="bg-white border border-gray-200 rounded-xl p-6">
         {activeMail && (
           <MailTab
             key={activeMail.id}

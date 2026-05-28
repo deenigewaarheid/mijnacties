@@ -4,7 +4,7 @@ import api from '../api/client'
 import { useConfirm } from '../components/ConfirmDialog'
 
 const GOAL_COLORS = [
-  { bg: 'bg-blue-500',   light: 'bg-blue-50',   border: 'border-blue-200',   text: 'text-blue-700',   bar: 'bg-blue-500' },
+  { bg: 'bg-accent-600', light: 'bg-accent-50',  border: 'border-accent-200', text: 'text-accent-700', bar: 'bg-accent-500' },
   { bg: 'bg-violet-500', light: 'bg-violet-50',  border: 'border-violet-200', text: 'text-violet-700', bar: 'bg-violet-500' },
   { bg: 'bg-emerald-500',light: 'bg-emerald-50', border: 'border-emerald-200',text: 'text-emerald-700',bar: 'bg-emerald-500' },
   { bg: 'bg-orange-500', light: 'bg-orange-50',  border: 'border-orange-200', text: 'text-orange-700', bar: 'bg-orange-500' },
@@ -96,7 +96,7 @@ function DeadlinePicker({ value, onChange, placeholder = 'Deadline', small = fal
     <div className="relative flex items-center">
       <input type="text" value={text} onChange={handleText} placeholder={placeholder}
         maxLength={10}
-        className={`border border-gray-200 rounded-lg focus:outline-none focus:border-blue-400 text-gray-600 bg-white pr-7 ${sz}`} />
+        className={`border border-gray-200 rounded-lg focus:outline-none focus:border-accent-500 text-gray-600 bg-white pr-7 ${sz}`} />
       <div className="absolute right-0 h-full w-7 flex items-center justify-center pointer-events-none">
         <Calendar size={12} className="text-gray-400" />
       </div>
@@ -147,7 +147,7 @@ function ActionRow({ action, goalId, goalDeadline, onToggle, onDelete, onUpdate 
   const afterGoal = !action.completed && action.deadline && goalDeadline &&
     action.deadline.slice(0,10) > goalDeadline.slice(0,10)
 
-  const iCls = 'text-xs border border-gray-200 rounded-lg px-2 py-1 focus:outline-none focus:border-blue-400 bg-white text-gray-800'
+  const iCls = 'text-xs border border-gray-200 rounded-lg px-2 py-1 focus:outline-none focus:border-accent-500 bg-white text-gray-800'
   const sCls = `${iCls} cursor-pointer flex-1 min-w-0`
 
   if (editing) {
@@ -224,7 +224,7 @@ function ActionRow({ action, goalId, goalDeadline, onToggle, onDelete, onUpdate 
       )}
 
       <div className="flex gap-0.5 opacity-0 group-hover/action:opacity-100 transition-opacity flex-shrink-0">
-        <button onClick={() => setEditing(true)} className="p-1 rounded text-gray-300 hover:text-blue-500 transition-colors"><Pencil size={11} /></button>
+        <button onClick={() => setEditing(true)} className="p-1 rounded text-gray-300 hover:text-accent-600 transition-colors"><Pencil size={11} /></button>
         <button onClick={() => onDelete(goalId, action.id)} className="p-1 rounded text-gray-300 hover:text-red-400 transition-colors"><Trash2 size={11} /></button>
       </div>
     </div>
@@ -293,7 +293,7 @@ function GoalCard({ goal, colorIdx, onDelete, onAddAction, onToggleAction, onDel
                   }
                 }}>
                 <input autoFocus value={titleText} onChange={e => setTitleText(e.target.value)}
-                  lang="nl" className="flex-1 text-base font-semibold border border-gray-200 rounded px-2 py-0.5 focus:outline-none focus:border-blue-400 bg-white"
+                  lang="nl" className="flex-1 text-base font-semibold border border-gray-200 rounded px-2 py-0.5 focus:outline-none focus:border-accent-500 bg-white"
                   onKeyDown={e => { if (e.key === 'Enter') saveTitle(); if (e.key === 'Escape') cancelTitle() }} />
                 <button onClick={cancelTitle} className="text-gray-400"><X size={14} /></button>
               </div>
@@ -301,7 +301,7 @@ function GoalCard({ goal, colorIdx, onDelete, onAddAction, onToggleAction, onDel
               <div className="flex items-center gap-1.5 group/title">
                 <h2 className="font-semibold text-base text-gray-900 dark:text-gray-100">{goal.title}</h2>
                 <button onClick={() => setEditTitle(true)}
-                  className="hidden group-hover/title:block text-gray-300 hover:text-blue-500 transition-colors">
+                  className="hidden group-hover/title:block text-gray-300 hover:text-accent-600 transition-colors">
                   <Pencil size={12} />
                 </button>
               </div>
@@ -491,10 +491,10 @@ export default function Doelen() {
       {confirmDialog}
       <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-blue-900">Doelen</h1>
+        <h1 className="text-xl font-display font-bold text-gray-900 dark:text-gray-100">Doelen</h1>
         {!showForm && (
           <button onClick={() => setShowForm(true)}
-            className="flex items-center gap-2 bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+            className="flex items-center gap-2 bg-accent-600 hover:bg-accent-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors">
             <Plus size={15} />Nieuw doel
           </button>
         )}
@@ -509,14 +509,14 @@ export default function Doelen() {
               cancelFormRef.current = false
             }
           }}
-          className="bg-white border border-blue-200 rounded-xl px-5 py-4 mb-6 space-y-3 shadow-sm">
+          className="bg-white border border-gray-200 rounded-xl px-5 py-4 mb-6 space-y-3 shadow-sm">
           <input autoFocus value={newTitle} onChange={e => setNewTitle(e.target.value)}
             placeholder="Naam van het doel..." lang="nl"
-            className="w-full text-base font-semibold border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:border-blue-400" />
+            className="w-full text-base font-semibold border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:border-accent-500" />
           <textarea value={newDesc} onChange={e => setNewDesc(e.target.value)}
             placeholder="Beschrijving (optioneel) — Wanneer is dit doel bereikt?"
             rows={2} lang="nl"
-            className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:border-blue-400 resize-none text-gray-600" />
+            className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:border-accent-500 resize-none text-gray-600" />
           <div className="flex items-center gap-3">
             <DeadlinePicker value={newDl} onChange={setNewDl} placeholder="Deadline (optioneel)" />
             <div className="flex gap-2 ml-auto">
