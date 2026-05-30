@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Printer, Clock, Zap, CalendarDays, AlertCircle, Target, Calendar } from 'lucide-react'
+import { Printer, Clock, Zap, CalendarDays, AlertCircle, Target, Calendar, Bell, FileText } from 'lucide-react'
 import api from '../api/client'
 import { getFilteredPlannerData, formatDate, localDateStr, dlStr } from '../utils/plannerData'
 
@@ -12,10 +12,11 @@ function fmtDatum(iso) {
 
 const PRIO_NL = { high: 'Hoog', mid: 'Gemiddeld', low: 'Laag' }
 
-function SectionHeader({ emoji, title }) {
+function SectionHeader({ icon: Icon, title }) {
   return (
-    <h2 className="text-sm font-bold uppercase tracking-wide mb-3 pb-2 border-b-2 border-accent-200 dark:border-accent-700 text-gray-700 dark:text-gray-300">
-      {emoji} {title}
+    <h2 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wide mb-3 pb-2 border-b-2 border-accent-200 dark:border-accent-700 text-gray-700 dark:text-gray-300">
+      {Icon && <Icon size={14} className="text-accent-500 flex-shrink-0" />}
+      {title}
     </h2>
   )
 }
@@ -197,7 +198,7 @@ export default function Dagplanner() {
         {/* Vandaag */}
         <section className="section mb-8">
           <div className="flex items-center justify-between mb-3 pb-2 border-b-2 border-accent-200 dark:border-accent-700">
-            <h2 className="text-sm font-bold uppercase tracking-wide text-gray-700 dark:text-gray-300">📅 VANDAAG</h2>
+            <h2 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-gray-700 dark:text-gray-300"><Calendar size={14} className="text-accent-500" /> VANDAAG</h2>
             <div className="no-print relative inline-flex items-center">
               <span className="text-xs border border-gray-300 rounded-lg px-2.5 py-1.5 pr-7 bg-white text-gray-700 select-none">
                 {(() => { const [y,m,d] = planDate.split('-'); return `${d}/${m}/${y}` })()}
@@ -267,7 +268,7 @@ export default function Dagplanner() {
 
         {/* 2-minuten */}
         <section className="section mb-8">
-          <SectionHeader emoji="⚡" title="2-MINUTEN TUSSENDOOR" />
+          <SectionHeader icon={Zap} title="2-MINUTEN TUSSENDOOR" />
           <div className="space-y-2">
             {data.twoMinute.length === 0 ? (
               <p className="text-sm text-gray-500 italic">Geen 2-minuten taken</p>
@@ -298,7 +299,7 @@ export default function Dagplanner() {
         {/* Achterstallig */}
         {data.overdue.length > 0 && (
           <section className="section mb-8">
-            <SectionHeader emoji="⚠️" title="ACHTERSTALLIG" />
+            <SectionHeader icon={AlertCircle} title="ACHTERSTALLIG" />
             <div className="space-y-2">
               {data.overdue.map(task => {
                 const checked = isChecked(task.id)
@@ -344,7 +345,7 @@ export default function Dagplanner() {
 
         {/* Morgen */}
         <section className="section mb-8">
-          <SectionHeader emoji="📆" title={`MORGEN — ${tomorrowLabel}`} />
+          <SectionHeader icon={CalendarDays} title={`MORGEN — ${tomorrowLabel}`} />
           <div className="space-y-2">
             {data.tomorrow.length === 0 ? (
               <p className="text-sm text-gray-500 italic">Geen taken gepland voor morgen</p>
@@ -376,7 +377,7 @@ export default function Dagplanner() {
 
         {/* Deadlines */}
         <section className="section mb-8">
-          <SectionHeader emoji="🔔" title="DEADLINES KOMENDE 7 DAGEN" />
+          <SectionHeader icon={Bell} title="DEADLINES KOMENDE 7 DAGEN" />
           <div className="space-y-1">
             {data.deadlines.length === 0 ? (
               <p className="text-sm text-gray-500 italic">Geen deadlines in de komende week</p>
@@ -396,7 +397,7 @@ export default function Dagplanner() {
 
         {/* Notities */}
         <section className="section">
-          <SectionHeader emoji="📝" title="NOTITIES" />
+          <SectionHeader icon={FileText} title="NOTITIES" />
           <textarea
             value={notities}
             onChange={e => setNotities(e.target.value)}
