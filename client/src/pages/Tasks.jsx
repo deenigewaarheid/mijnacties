@@ -1126,13 +1126,32 @@ export default function Tasks() {
     setGoalActions(gs => gs.filter(a => !(a.id === actionId && a.goalId === goalId)))
   }
 
+  function parseImportText(text) {
+    const tasks = []
+    let current = null
+    for (const raw of text.split('\n')) {
+      if (!raw.trim()) continue
+      const isSubtask = /^(\s{2,}|\t)/.test(raw) || /^\s*[-*]/.test(raw)
+      if (isSubtask) {
+        if (current) current.subtasks.push(raw.replace(/^\s*[-*]\s*/, '').trim())
+      } else {
+        current = { title: raw.trim(), subtasks: [] }
+        tasks.push(current)
+      }
+    }
+    return tasks
+  }
+
   async function handleImport() {
-    const lines = importText.split('\n').map(l => l.trim()).filter(Boolean)
-    if (!lines.length) return
+    const tasks = parseImportText(importText)
+    if (!tasks.length) return
     setImporting(true)
     try {
-      for (const line of lines) {
-        await api.post('/tasks', { title: line, category: importCat, bestemming: 'actie' })
+      for (const t of tasks) {
+        await api.post('/tasks', {
+          title: t.title, category: importCat, bestemming: 'actie',
+          ...(t.subtasks.length ? { subtasks: t.subtasks } : {}),
+        })
       }
       setImportText(''); setShowImport(false); refreshBadges()
       api.get('/tasks').then(r => setTasks(r.data))
@@ -1269,14 +1288,14 @@ export default function Tasks() {
                 <X size={16} />
               </button>
             </div>
-            <p className="text-xs text-gray-400 dark:text-gray-500 mb-3">Plak je taken hieronder — elke regel wordt één taak.</p>
+            <p className="text-xs text-gray-400 dark:text-gray-500 mb-1">Elke regel = één taak. Regels met <code className="bg-gray-100 dark:bg-gray-800 px-1 rounded">- </code> ervoor worden subtaken van de taak erboven.</p>
             <textarea
               autoFocus
               value={importText}
               onChange={e => setImportText(e.target.value)}
-              placeholder={'Taak 1\nTaak 2\nTaak 3\n...'}
+              placeholder={'Taak 1\n  - Subtaak A\n  - Subtaak B\nTaak 2\nTaak 3'}
               rows={8}
-              className="w-full border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2.5 text-sm text-gray-700 dark:text-gray-200 bg-transparent focus:outline-none focus:border-accent-500 resize-none mb-3"
+              className="w-full border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2.5 text-sm text-gray-700 dark:text-gray-200 bg-transparent focus:outline-none focus:border-accent-500 resize-none mb-3 mt-2 font-mono"
             />
             <div className="flex items-center gap-3 mb-4">
               <label className="text-xs text-gray-500 dark:text-gray-400">Categorie:</label>
@@ -1286,7 +1305,7 @@ export default function Tasks() {
                 <option value="privé">Privé</option>
               </select>
               <span className="text-xs text-gray-400 dark:text-gray-500 ml-auto">
-                {importText.split('\n').filter(l => l.trim()).length} taken
+                {parseImportText(importText).length} taken · {parseImportText(importText).reduce((s, t) => s + t.subtasks.length, 0)} subtaken
               </span>
             </div>
             <div className="flex gap-2 justify-end">
