@@ -1463,7 +1463,7 @@ export default function Tasks() {
 
           {/* Context grouped view */}
           {tab === 'context' && !loading && (
-            <ContextGroupedView tasks={tasks} taskProps={taskProps} />
+            <ContextGroupedView tasks={visibleTasks} taskProps={taskProps} />
           )}
 
           {/* Other filters — flat list */}
