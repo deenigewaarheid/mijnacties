@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Takenlijst</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            accent: { 400: '#3db38a', 600: '#0f6e56' }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Inter', ui-sans-serif, system-ui, sans-serif; }
+
+    /* Hover: lichte achtergrond + iconen zichtbaar */
+    .task-row:hover { background: #f1f5f9; }
+    .task-row:hover .task-actions { opacity: 1; }
+    .task-actions { opacity: 0; transition: opacity 0.12s ease; }
+
+    /* Subtaken balk */
+    .progress-bar { background: #e2e8f0; border-radius: 9999px; height: 3px; width: 48px; overflow: hidden; }
+    .progress-fill { height: 100%; background: #3db38a; border-radius: 9999px; }
+
+    /* Scheidingslijn tussen rijen */
+    .task-row + .task-row { border-top: 1px solid #f1f5f9; }
+  </style>
+</head>
+<body class="bg-white min-h-screen">
+<div class="max-w-2xl mx-auto py-6 px-4">
+
+  <!-- ══════════════════════════════════════════════════════
+       HOOFDSECTIE: WERK
+  ══════════════════════════════════════════════════════ -->
+  <section class="mb-6">
+
+    <!-- Sectiekop -->
+    <button onclick="this.closest('section').querySelector('.section-body').classList.toggle('hidden')"
+            class="w-full flex items-center justify-between px-2 py-1.5 mb-1 text-left group">
+      <div class="flex items-center gap-2">
+        <span class="text-[11px] font-semibold uppercase tracking-widest text-accent-600">Werk</span>
+        <span class="text-[11px] text-gray-400">· 6</span>
+      </div>
+      <i class="fa-solid fa-chevron-up text-gray-300 text-[10px] group-hover:text-gray-500 transition-colors"></i>
+    </button>
+
+    <div class="section-body">
+
+      <!-- ── Verlopen ───────────────────────────────────── -->
+      <div class="mb-3">
+        <p class="px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-red-400">Verlopen</p>
+
+        <!-- Mail naar ouders 2A -->
+        <div class="task-row flex items-start gap-2.5 px-2 py-2 rounded-lg cursor-pointer transition-colors">
+          <!-- Checkbox + cirkel -->
+          <div class="flex items-center gap-1.5 pt-0.5 flex-shrink-0">
+            <input type="checkbox" class="w-3.5 h-3.5 rounded cursor-pointer" style="accent-color:#0f6e56" />
+            <button class="text-gray-200 hover:text-gray-400 transition-colors">
+              <i class="fa-regular fa-circle text-sm"></i>
+            </button>
+          </div>
+
+          <!-- Inhoud -->
+          <div class="flex-1 min-w-0">
+            <p class="text-sm text-gray-800 leading-snug truncate">Mail naar ouders 2A over Schiermonnikoog</p>
+            <!-- Metadata -->
+            <div class="flex items-center gap-2 mt-0.5 text-[11px] text-gray-400">
+              <span>@thuis</span>
+              <span class="text-gray-200">·</span>
+              <span><i class="fa-solid fa-moon text-[9px]"></i> laag</span>
+              <span class="text-gray-200">·</span>
+              <span><i class="fa-regular fa-clock text-[9px]"></i> 15 m</span>
+            </div>
+          </div>
+
+          <!-- Rechts -->
+          <div class="flex items-center gap-2 flex-shrink-0 pt-0.5">
+            <span class="text-[11px] font-semibold text-red-500 flex items-center gap-1">
+              <i class="fa-solid fa-circle-exclamation text-[9px]"></i> 3 d te laat
+            </span>
+            <span class="text-[10px] px-1.5 py-0.5 rounded bg-red-50 text-red-500 font-medium">Hoog</span>
+            <div class="task-actions flex items-center gap-0.5">
+              <button class="p-1 rounded text-gray-300 hover:text-orange-400 transition-colors" title="Focus"><i class="fa-regular fa-circle-dot text-xs"></i></button>
+              <button class="p-1 rounded text-gray-300 hover:text-gray-600 transition-colors" title="Bewerken"><i class="fa-solid fa-pencil text-[10px]"></i></button>
+              <button class="p-1 rounded text-gray-300 hover:text-red-400 transition-colors" title="Verwijderen"><i class="fa-solid fa-trash text-[10px]"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Vandaag & morgen ───────────────────────────── -->
+      <div class="mb-3">
+        <p class="px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-orange-400">Vandaag &amp; morgen</p>
+
+        <!-- Sectie-overleg agenda rondsturen (vandaag) -->
+        <div class="task-row flex items-start gap-2.5 px-2 py-2 rounded-lg cursor-pointer transition-colors">
+          <div class="flex items-center gap-1.5 pt-0.5 flex-shrink-0">
+            <input type="checkbox" class="w-3.5 h-3.5 rounded cursor-pointer" style="accent-color:#0f6e56" />
+            <button class="text-gray-200 hover:text-gray-400 transition-colors"><i class="fa-regular fa-circle text-sm"></i></button>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm text-gray-800 leading-snug truncate">Sectie-overleg agenda rondsturen</p>
+            <div class="flex items-center gap-2 mt-0.5 text-[11px] text-gray-400">
+              <span>@school</span>
+              <span class="text-gray-200">·</span>
+              <span><i class="fa-solid fa-moon text-[9px]"></i> laag</span>
+              <span class="text-gray-200">·</span>
+              <span><i class="fa-regular fa-clock text-[9px]"></i> 10 m</span>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 flex-shrink-0 pt-0.5">
+            <span class="text-[11px] font-medium text-orange-500">vandaag</span>
+            <div class="task-actions flex items-center gap-0.5">
+              <button class="p-1 rounded text-gray-300 hover:text-orange-400 transition-colors"><i class="fa-regular fa-circle-dot text-xs"></i></button>
+              <button class="p-1 rounded text-gray-300 hover:text-gray-600 transition-colors"><i class="fa-solid fa-pencil text-[10px]"></i></button>
+              <button class="p-1 rounded text-gray-300 hover:text-red-400 transition-colors"><i class="fa-solid fa-trash text-[10px]"></i></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tussenrapportages klas 3B (morgen) -->
+        <div class="task-row flex items-start gap-2.5 px-2 py-2 rounded-lg cursor-pointer transition-colors">
+          <div class="flex items-center gap-1.5 pt-0.5 flex-shrink-0">
+            <input type="checkbox" class="w-3.5 h-3.5 rounded cursor-pointer" style="accent-color:#0f6e56" />
+            <button class="text-gray-200 hover:text-gray-400 transition-colors"><i class="fa-regular fa-circle text-sm"></i></button>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm text-gray-800 leading-snug truncate">Tussenrapportages klas 3B nakijken</p>
+            <div class="flex items-center gap-2 mt-0.5 text-[11px] text-gray-400">
+              <span>@school</span>
+              <span class="text-gray-200">·</span>
+              <span><i class="fa-solid fa-bolt text-[9px]"></i> hoog</span>
+              <span class="text-gray-200">·</span>
+              <span><i class="fa-regular fa-clock text-[9px]"></i> 90 m</span>
+            </div>
+            <p class="text-[11px] text-gray-400 italic mt-0.5">Begin met klas 3B.4 — die zijn er nog niet.</p>
+            <!-- Subtaken -->
+            <div class="flex items-center gap-1.5 mt-1">
+              <span class="text-[10px] text-gray-400">2/4 subtaken</span>
+              <div class="progress-bar"><div class="progress-fill" style="width:50%"></div></div>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 flex-shrink-0 pt-0.5">
+            <span class="text-[11px] font-medium text-amber-500">morgen</span>
+            <span class="text-[10px] px-1.5 py-0.5 rounded bg-red-50 text-red-500 font-medium">Hoog</span>
+            <div class="task-actions flex items-center gap-0.5">
+              <button class="p-1 rounded text-gray-300 hover:text-orange-400 transition-colors"><i class="fa-regular fa-circle-dot text-xs"></i></button>
+              <button class="p-1 rounded text-gray-300 hover:text-gray-600 transition-colors"><i class="fa-solid fa-pencil text-[10px]"></i></button>
+              <button class="p-1 rounded text-gray-300 hover:text-red-400 transition-colors"><i class="fa-solid fa-trash text-[10px]"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Komende week ────────────────────────────────── -->
+      <div>
+        <p class="px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-amber-500">Komende week</p>
+
+        <!-- Boekenlijst wiskunde D (3 jun) -->
+        <div class="task-row flex items-start gap-2.5 px-2 py-2 rounded-lg cursor-pointer transition-colors">
+          <div class="flex items-center gap-1.5 pt-0.5 flex-shrink-0">
+            <input type="checkbox" class="w-3.5 h-3.5 rounded cursor-pointer" style="accent-color:#0f6e56" />
+            <button class="text-gray-200 hover:text-gray-400 transition-colors"><i class="fa-regular fa-circle text-sm"></i></button>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm text-gray-800 leading-snug truncate">Boekenlijst wiskunde D bestellen</p>
+            <div class="flex items-center gap-2 mt-0.5 text-[11px] text-gray-400">
+              <span>@computer</span>
+              <span class="text-gray-200">·</span>
+              <span><i class="fa-solid fa-bolt text-[9px]"></i> middel</span>
+              <span class="text-gray-200">·</span>
+              <span><i class="fa-regular fa-clock text-[9px]"></i> 20 m</span>
+            </div>
+            <p class="text-[11px] text-gray-400 italic mt-0.5">Via bol.com — schoolaccount.</p>
+          </div>
+          <div class="flex items-center gap-2 flex-shrink-0 pt-0.5">
+            <span class="text-[11px] text-gray-400">3 jun</span>
+            <div class="task-actions flex items-center gap-0.5">
+              <button class="p-1 rounded text-gray-300 hover:text-orange-400 transition-colors"><i class="fa-regular fa-circle-dot text-xs"></i></button>
+              <button class="p-1 rounded text-gray-300 hover:text-gray-600 transition-colors"><i class="fa-solid fa-pencil text-[10px]"></i></button>
+              <button class="p-1 rounded text-gray-300 hover:text-red-400 transition-colors"><i class="fa-solid fa-trash text-[10px]"></i></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Concept-toets H5 (5 jun) -->
+        <div class="task-row flex items-start gap-2.5 px-2 py-2 rounded-lg cursor-pointer transition-colors">
+          <div class="flex items-center gap-1.5 pt-0.5 flex-shrink-0">
+            <input type="checkbox" class="w-3.5 h-3.5 rounded cursor-pointer" style="accent-color:#0f6e56" />
+            <button class="text-gray-200 hover:text-gray-400 transition-colors"><i class="fa-regular fa-circle text-sm"></i></button>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm text-gray-800 leading-snug truncate">Concept-toets H5 maken</p>
+            <div class="flex items-center gap-2 mt-0.5 text-[11px] text-gray-400">
+              <span>@thuis</span>
+              <span class="text-gray-200">·</span>
+              <span><i class="fa-solid fa-bolt text-[9px]"></i> hoog</span>
+              <span class="text-gray-200">·</span>
+              <span><i class="fa-regular fa-clock text-[9px]"></i> 120 m</span>
+            </div>
+            <p class="text-[11px] text-gray-400 italic mt-0.5">Vraag 3 herschrijven na feedback Anneke.</p>
+            <div class="flex items-center gap-1.5 mt-1">
+              <span class="text-[10px] text-gray-400">1/3 subtaken</span>
+              <div class="progress-bar"><div class="progress-fill" style="width:33%"></div></div>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 flex-shrink-0 pt-0.5">
+            <span class="text-[11px] text-gray-400">5 jun</span>
+            <span class="text-[10px] px-1.5 py-0.5 rounded bg-red-50 text-red-500 font-medium">Hoog</span>
+            <div class="task-actions flex items-center gap-0.5">
+              <button class="p-1 rounded text-gray-300 hover:text-orange-400 transition-colors"><i class="fa-regular fa-circle-dot text-xs"></i></button>
+              <button class="p-1 rounded text-gray-300 hover:text-gray-600 transition-colors"><i class="fa-solid fa-pencil text-[10px]"></i></button>
+              <button class="p-1 rounded text-gray-300 hover:text-red-400 transition-colors"><i class="fa-solid fa-trash text-[10px]"></i></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Werkstukken klas 4 (7 jun) -->
+        <div class="task-row flex items-start gap-2.5 px-2 py-2 rounded-lg cursor-pointer transition-colors">
+          <div class="flex items-center gap-1.5 pt-0.5 flex-shrink-0">
+            <input type="checkbox" class="w-3.5 h-3.5 rounded cursor-pointer" style="accent-color:#0f6e56" />
+            <button class="text-gray-200 hover:text-gray-400 transition-colors"><i class="fa-regular fa-circle text-sm"></i></button>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm text-gray-800 leading-snug truncate">Werkstukken klas 4 lezen</p>
+            <div class="flex items-center gap-2 mt-0.5 text-[11px] text-gray-400">
+              <span>@thuis</span>
+              <span class="text-gray-200">·</span>
+              <span><i class="fa-solid fa-bolt text-[9px]"></i> middel</span>
+              <span class="text-gray-200">·</span>
+              <span><i class="fa-regular fa-clock text-[9px]"></i> 60 m</span>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 flex-shrink-0 pt-0.5">
+            <span class="text-[11px] text-gray-400">7 jun</span>
+            <div class="task-actions flex items-center gap-0.5">
+              <button class="p-1 rounded text-gray-300 hover:text-orange-400 transition-colors"><i class="fa-regular fa-circle-dot text-xs"></i></button>
+              <button class="p-1 rounded text-gray-300 hover:text-gray-600 transition-colors"><i class="fa-solid fa-pencil text-[10px]"></i></button>
+              <button class="p-1 rounded text-gray-300 hover:text-red-400 transition-colors"><i class="fa-solid fa-trash text-[10px]"></i></button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div><!-- einde section-body WERK -->
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════
+       HOOFDSECTIE: PRIVÉ
+  ══════════════════════════════════════════════════════ -->
+  <section>
+
+    <button onclick="this.closest('section').querySelector('.section-body').classList.toggle('hidden')"
+            class="w-full flex items-center justify-between px-2 py-1.5 mb-1 text-left group">
+      <div class="flex items-center gap-2">
+        <span class="text-[11px] font-semibold uppercase tracking-widest text-pink-600">Privé</span>
+        <span class="text-[11px] text-gray-400">· 1</span>
+      </div>
+      <i class="fa-solid fa-chevron-up text-gray-300 text-[10px] group-hover:text-gray-500 transition-colors"></i>
+    </button>
+
+    <div class="section-body">
+
+      <!-- ── Komende week ────────────────────────────────── -->
+      <div>
+        <p class="px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-amber-500">Komende week</p>
+
+        <!-- TU Delft open dag (11 jun) -->
+        <div class="task-row flex items-start gap-2.5 px-2 py-2 rounded-lg cursor-pointer transition-colors">
+          <div class="flex items-center gap-1.5 pt-0.5 flex-shrink-0">
+            <input type="checkbox" class="w-3.5 h-3.5 rounded cursor-pointer" style="accent-color:#0f6e56" />
+            <button class="text-gray-200 hover:text-gray-400 transition-colors"><i class="fa-regular fa-circle text-sm"></i></button>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm text-gray-800 leading-snug truncate">TU Delft open dag — programma kiezen</p>
+            <div class="flex items-center gap-2 mt-0.5 text-[11px] text-gray-400">
+              <span>@computer</span>
+              <span class="text-gray-200">·</span>
+              <span><i class="fa-solid fa-moon text-[9px]"></i> laag</span>
+              <span class="text-gray-200">·</span>
+              <span><i class="fa-regular fa-clock text-[9px]"></i> 15 m</span>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 flex-shrink-0 pt-0.5">
+            <span class="text-[11px] text-gray-400">11 jun</span>
+            <div class="task-actions flex items-center gap-0.5">
+              <button class="p-1 rounded text-gray-300 hover:text-orange-400 transition-colors"><i class="fa-regular fa-circle-dot text-xs"></i></button>
+              <button class="p-1 rounded text-gray-300 hover:text-gray-600 transition-colors"><i class="fa-solid fa-pencil text-[10px]"></i></button>
+              <button class="p-1 rounded text-gray-300 hover:text-red-400 transition-colors"><i class="fa-solid fa-trash text-[10px]"></i></button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div><!-- einde section-body PRIVÉ -->
+  </section>
+
+</div>
+</body>
+</html>
