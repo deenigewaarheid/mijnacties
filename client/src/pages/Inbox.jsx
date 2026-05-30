@@ -555,23 +555,6 @@ export default function Inbox() {
         </button>
       </div>
 
-      {gmailConnected && (
-        <div className="flex items-center gap-2 mb-5 flex-wrap">
-          <button onClick={handleSync} disabled={syncing}
-            className="flex items-center gap-2 border border-gray-200 hover:border-gray-300 text-gray-600 hover:text-gray-900 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors disabled:opacity-50">
-            <Mail size={13} />{syncing ? 'Synchroniseren...' : 'Sync nu'}
-          </button>
-          <button onClick={handleReprocess} disabled={reprocessing}
-            className="flex items-center gap-2 border border-gray-200 hover:border-gray-300 text-gray-600 hover:text-gray-900 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors disabled:opacity-50">
-            <Mail size={13} />{reprocessing ? 'Bezig...' : 'Taken genereren uit mails'}
-          </button>
-          {successMsg && (
-            <span className="text-xs text-accent-600 font-medium flex items-center gap-1">
-              <CheckCircle2 size={13} />{successMsg}
-            </span>
-          )}
-        </div>
-      )}
 
       {loading && <p className="text-gray-500 text-sm">Laden...</p>}
 
