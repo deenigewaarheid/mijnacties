@@ -524,6 +524,11 @@ export default function Doelen() {
                 className="px-4 py-1.5 text-sm text-gray-500 hover:text-gray-700 transition-colors">
                 Annuleren
               </button>
+              <button type="submit"
+                disabled={!newTitle.trim()}
+                className="px-4 py-1.5 text-sm bg-accent-600 hover:bg-accent-700 text-white rounded-lg font-semibold disabled:opacity-40 transition-colors">
+                Opslaan
+              </button>
             </div>
           </div>
         </form>
