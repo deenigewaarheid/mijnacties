@@ -3,7 +3,7 @@ import {
   CheckCircle2, Circle, ChevronDown, ChevronRight,
   Trash2, Pencil, Check, X, Plus, Calendar,
   Target, Trophy, Zap, Flame, Moon, Clock, Sparkles, ArrowRight, AlertCircle,
-  GraduationCap, Monitor, Phone, Users, Home, List
+  GraduationCap, Monitor, Phone, Users, Home, List, FolderKanban
 } from 'lucide-react'
 import api from '../api/client'
 import { refreshBadges } from '../api/badges'
@@ -969,12 +969,13 @@ function EnergyFilter({ tasks, currentEnergy, onSelect }) {
 
 const EMPTY_FORM = { title: '', deadline: '', priority: 'mid', category: '', description: '', subtasks: [] }
 const FILTERS = [
-  { key: 'all',      label: 'Alle taken' },
-  { key: 'context',  label: 'Per context' },
-  { key: 'today',    label: 'Vandaag' },
-  { key: '2min',     label: '2 min', icon: Zap },
-  { key: 'upcoming', label: 'Komende 30d' },
-  { key: 'completed',label: 'Voltooid' },
+  { key: 'all',       label: 'Alle taken' },
+  { key: 'projecten', label: 'Projecten', icon: FolderKanban },
+  { key: 'context',   label: 'Per context' },
+  { key: 'today',     label: 'Vandaag' },
+  { key: '2min',      label: '2 min', icon: Zap },
+  { key: 'upcoming',  label: 'Komende 30d' },
+  { key: 'completed', label: 'Voltooid' },
 ]
 
 // ─── Main component ──────────────────────────────────────────────────────────
@@ -1034,11 +1035,14 @@ export default function Tasks() {
 
   function filterTasks(tasks) {
     let result
-    if (tab === 'upcoming')  result = tasks.filter(t => !t.completed && t.deadline && getDaysLeft(t.deadline) <= 30)
-    else if (tab === 'completed') result = tasks
-    else if (tab === '2min') result = tasks.filter(t => !t.completed && t.tijd_minuten != null && t.tijd_minuten <= 2)
+    if (tab === 'upcoming')   result = tasks.filter(t => !t.completed && t.deadline && getDaysLeft(t.deadline) <= 30)
+    else if (tab === 'completed')  result = tasks
+    else if (tab === '2min')       result = tasks.filter(t => !t.completed && t.tijd_minuten != null && t.tijd_minuten <= 2)
+    else if (tab === 'projecten')  result = tasks.filter(t => !t.completed && t.subtasks && t.subtasks.length > 0)
     else result = tasks.filter(t => !t.completed)
-    result = result.filter(t => !t.bestemming || t.bestemming === 'actie' || t.bestemming === 'kalender')
+    if (tab !== 'projecten') {
+      result = result.filter(t => !t.bestemming || t.bestemming === 'actie' || t.bestemming === 'kalender')
+    }
     if (currentEnergy) {
       result = result.filter(t => t.energie === currentEnergy)
     }
