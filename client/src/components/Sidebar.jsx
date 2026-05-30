@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
-import { Mail, CheckSquare, Settings, LogOut, RotateCcw, FolderKanban, LayoutDashboard, X, Plus, Trophy, Moon, Sun, CalendarDays, TrendingUp, PenLine, HelpCircle } from 'lucide-react'
+import { Mail, CheckSquare, Settings, LogOut, RotateCcw, FolderKanban, LayoutDashboard, X, Plus, Trophy, Moon, Sun, CalendarDays, PenLine, HelpCircle } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { useDarkMode } from '../context/DarkModeContext'
 import api from '../api/client'
@@ -19,7 +19,6 @@ const LIJSTEN = [
 
 const EXTRA = [
   { to: '/dagplanner', icon: CalendarDays, label: 'Dagplanner',   badgeKey: null },
-  { to: '/insights',   icon: TrendingUp,   label: 'Inzichten',    badgeKey: null },
   { to: '/review',     icon: RotateCcw,    label: 'Review',       badgeKey: null },
   { to: '/settings',   icon: Settings,     label: 'Instellingen', badgeKey: null },
 ]

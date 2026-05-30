@@ -13,7 +13,6 @@ import Settings from './pages/Settings'
 import Projecten from './pages/Projecten'
 import Doelen from './pages/Doelen'
 import Dagplanner from './pages/Dagplanner'
-import Insights from './pages/Insights'
 import Mailmaker from './pages/Mailmaker'
 
 function Protected({ children }) {
@@ -44,7 +43,6 @@ export default function App() {
             <Route path="/projecten" element={<Protected><Projecten /></Protected>} />
             <Route path="/doelen"      element={<Protected><Doelen /></Protected>} />
             <Route path="/dagplanner" element={<Protected><Dagplanner /></Protected>} />
-            <Route path="/insights"   element={<Protected><Insights /></Protected>} />
             <Route path="*"          element={<Navigate to="/dashboard" replace />} />
           </Routes>
         </BrowserRouter>
