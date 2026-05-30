@@ -1038,7 +1038,7 @@ export default function Tasks() {
     else if (tab === 'completed') result = tasks
     else if (tab === '2min') result = tasks.filter(t => !t.completed && t.tijd_minuten != null && t.tijd_minuten <= 2)
     else result = tasks.filter(t => !t.completed)
-    result = result.filter(t => t.bestemming !== 'losse_eindjes')
+    result = result.filter(t => !t.bestemming || t.bestemming === 'actie' || t.bestemming === 'kalender')
     if (currentEnergy) {
       result = result.filter(t => t.energie === currentEnergy)
     }
