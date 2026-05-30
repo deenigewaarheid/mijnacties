@@ -994,6 +994,10 @@ export default function Tasks() {
   const [collapsed,   setCollapsed]   = useState({})
   const [currentEnergy, setCurrentEnergy] = useState(null)
   const [selectedTasks, setSelectedTasks] = useState(new Set())
+  const [showImport, setShowImport]       = useState(false)
+  const [importText, setImportText]       = useState('')
+  const [importCat,  setImportCat]        = useState('werk')
+  const [importing,  setImporting]        = useState(false)
   const { confirm, dialog: confirmDialog } = useConfirm()
 
   useEffect(() => {
@@ -1122,6 +1126,19 @@ export default function Tasks() {
     setGoalActions(gs => gs.filter(a => !(a.id === actionId && a.goalId === goalId)))
   }
 
+  async function handleImport() {
+    const lines = importText.split('\n').map(l => l.trim()).filter(Boolean)
+    if (!lines.length) return
+    setImporting(true)
+    try {
+      for (const line of lines) {
+        await api.post('/tasks', { title: line, category: importCat, bestemming: 'actie' })
+      }
+      setImportText(''); setShowImport(false); refreshBadges()
+      api.get('/tasks').then(r => setTasks(r.data))
+    } finally { setImporting(false) }
+  }
+
   async function handleCreateTask(e) {
     e.preventDefault()
     if (!form.title.trim()) return
@@ -1240,6 +1257,52 @@ export default function Tasks() {
   return (
     <div>
       {confirmDialog}
+
+      {/* Import modal */}
+      {showImport && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50"
+          onClick={e => e.target === e.currentTarget && setShowImport(false)}>
+          <div className="bg-white dark:bg-gray-900 rounded-xl shadow-2xl w-full max-w-lg p-6 border border-gray-200 dark:border-gray-700">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="font-semibold text-gray-900 dark:text-gray-100">Taken importeren</h2>
+              <button onClick={() => setShowImport(false)} className="text-gray-400 hover:text-gray-600 p-1 rounded transition-colors">
+                <X size={16} />
+              </button>
+            </div>
+            <p className="text-xs text-gray-400 dark:text-gray-500 mb-3">Plak je taken hieronder — elke regel wordt één taak.</p>
+            <textarea
+              autoFocus
+              value={importText}
+              onChange={e => setImportText(e.target.value)}
+              placeholder={'Taak 1\nTaak 2\nTaak 3\n...'}
+              rows={8}
+              className="w-full border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2.5 text-sm text-gray-700 dark:text-gray-200 bg-transparent focus:outline-none focus:border-accent-500 resize-none mb-3"
+            />
+            <div className="flex items-center gap-3 mb-4">
+              <label className="text-xs text-gray-500 dark:text-gray-400">Categorie:</label>
+              <select value={importCat} onChange={e => setImportCat(e.target.value)}
+                className="text-xs border border-gray-200 dark:border-gray-700 rounded-lg px-2.5 py-1.5 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200 focus:outline-none focus:border-accent-500 cursor-pointer">
+                <option value="werk">Werk</option>
+                <option value="privé">Privé</option>
+              </select>
+              <span className="text-xs text-gray-400 dark:text-gray-500 ml-auto">
+                {importText.split('\n').filter(l => l.trim()).length} taken
+              </span>
+            </div>
+            <div className="flex gap-2 justify-end">
+              <button onClick={() => setShowImport(false)}
+                className="px-4 py-2 text-sm text-gray-500 hover:text-gray-700 dark:hover:text-gray-200 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
+                Annuleren
+              </button>
+              <button onClick={handleImport}
+                disabled={importing || !importText.trim()}
+                className="px-4 py-2 text-sm bg-accent-600 hover:bg-accent-700 text-white rounded-lg font-semibold disabled:opacity-40 transition-colors">
+                {importing ? 'Bezig...' : 'Importeren'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {/* ── Main tabs ── */}
       <div className="flex gap-0 mb-8 border-b border-gray-200 dark:border-gray-700 overflow-x-auto no-scrollbar">
         {MAIN_TABS.map(t => {
@@ -1344,13 +1407,20 @@ export default function Tasks() {
                 </div>
               </form>
             ) : (
-              <button onClick={() => setShowForm(true)}
-                className="flex items-center gap-2 text-sm text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 mb-5 transition-colors group">
-                <span className="w-5 h-5 rounded-full border-2 border-gray-200 dark:border-gray-700 flex items-center justify-center group-hover:border-gray-400 transition-colors">
-                  <Plus size={11} />
-                </span>
-                Nieuwe taak toevoegen
-              </button>
+              <div className="flex items-center gap-4 mb-5">
+                <button onClick={() => setShowForm(true)}
+                  className="flex items-center gap-2 text-sm text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors group">
+                  <span className="w-5 h-5 rounded-full border-2 border-gray-200 dark:border-gray-700 flex items-center justify-center group-hover:border-gray-400 transition-colors">
+                    <Plus size={11} />
+                  </span>
+                  Nieuwe taak toevoegen
+                </button>
+                <button onClick={() => setShowImport(true)}
+                  className="flex items-center gap-1.5 text-sm text-gray-400 dark:text-gray-500 hover:text-accent-600 dark:hover:text-accent-400 transition-colors">
+                  <List size={14} />
+                  Meerdere importeren
+                </button>
+              </div>
             )
           )}
 
