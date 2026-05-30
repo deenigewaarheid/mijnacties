@@ -17,6 +17,7 @@ const migrations = [
     `ALTER TABLE tasks ADD COLUMN IF NOT EXISTS tijd_minuten INTEGER`,
     `ALTER TABLE tasks ADD COLUMN IF NOT EXISTS bestemming VARCHAR(50)`,
     `ALTER TABLE tasks ADD COLUMN IF NOT EXISTS focus BOOLEAN DEFAULT FALSE`,
+    `ALTER TABLE tasks ADD COLUMN IF NOT EXISTS belangrijk BOOLEAN DEFAULT FALSE`,
 ];
 
 async function runMigrations() {

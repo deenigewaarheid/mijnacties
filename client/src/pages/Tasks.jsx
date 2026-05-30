@@ -3,7 +3,7 @@ import {
   CheckCircle2, Circle, ChevronDown, ChevronRight,
   Trash2, Pencil, Check, X, Plus, Calendar,
   Target, Trophy, Zap, Flame, Moon, Clock, Sparkles, ArrowRight, AlertCircle,
-  GraduationCap, Monitor, Phone, Users, Home, List, FolderKanban
+  GraduationCap, Monitor, Phone, Users, Home, List, FolderKanban, Star
 } from 'lucide-react'
 import api from '../api/client'
 import { refreshBadges } from '../api/badges'
@@ -207,7 +207,7 @@ function SubtaskItem({ sub, taskId, onToggle, onUpdate, onDelete }) {
 
 // ─── TaskItem ─────────────────────────────────────────────────────────────────
 
-function TaskItem({ task, onToggle, onSubtaskToggle, onDelete, onUpdate, onSubtaskAdd, onSubtaskUpdate, onSubtaskDelete, onFocusToggle, onTimeChange, onSubtaskTimeChange, onSelect, selected }) {
+function TaskItem({ task, onToggle, onSubtaskToggle, onDelete, onUpdate, onSubtaskAdd, onSubtaskUpdate, onSubtaskDelete, onFocusToggle, onBelangrijkToggle, onTimeChange, onSubtaskTimeChange, onSelect, selected }) {
   const [open,         setOpen]         = useState(false)
   const [editing,      setEditing]      = useState(false)
   const [isCompleting, setIsCompleting] = useState(false)
@@ -458,6 +458,11 @@ function TaskItem({ task, onToggle, onSubtaskToggle, onDelete, onUpdate, onSubta
             </span>
           )}
           <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+            <button onClick={e => { e.stopPropagation(); onBelangrijkToggle(task.id, !task.belangrijk) }}
+              title={task.belangrijk ? 'Verwijder uit belangrijk' : 'Markeer als belangrijk'}
+              className={`p-1 rounded transition-colors ${task.belangrijk ? 'text-amber-400' : 'text-gray-300 hover:text-amber-400'}`}>
+              <Star size={12} fill={task.belangrijk ? 'currentColor' : 'none'} />
+            </button>
             <button onClick={e => { e.stopPropagation(); onFocusToggle(task.id, !task.focus) }}
               title={task.focus ? 'Verwijder uit focus' : 'Voeg toe aan focus'}
               className={`p-1 rounded transition-colors ${isFocused ? 'text-orange-400' : 'text-gray-300 hover:text-orange-400'}`}>
@@ -1099,6 +1104,10 @@ export default function Tasks() {
     await api.patch(`/tasks/${id}`, { focus })
     setTasks(ts => ts.map(t => t.id === id ? { ...t, focus } : t))
   }
+  async function handleBelangrijkToggle(id, belangrijk) {
+    await api.patch(`/tasks/${id}`, { belangrijk })
+    setTasks(ts => ts.map(t => t.id === id ? { ...t, belangrijk } : t))
+  }
   async function handleSubtaskAdd(taskId, text) {
     const res = await api.post(`/tasks/${taskId}/subtasks`, { text })
     setTasks(ts => ts.map(t => t.id === taskId ? { ...t, subtasks: [...(t.subtasks || []), res.data] } : t))
@@ -1180,6 +1189,7 @@ export default function Tasks() {
     onSubtaskAdd: handleSubtaskAdd,
     onSubtaskUpdate: handleSubtaskUpdate, onSubtaskDelete: handleSubtaskDelete,
     onFocusToggle: handleFocusToggle,
+    onBelangrijkToggle: handleBelangrijkToggle,
     onTimeChange: handleTimeChange, onSubtaskTimeChange: handleSubtaskTimeChange,
     onSelect: toggleSelectTask,
     selected: id => selectedTasks.has(id),

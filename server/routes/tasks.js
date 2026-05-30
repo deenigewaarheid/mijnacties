@@ -114,14 +114,14 @@ router.get('/week', async (req, res) => {
 router.post('/', async (req, res) => {
     try {
         const userId = req.userId;
-        const { title, description, deadline, priority, category, subtasks, context, energie, tijd_minuten, bestemming, focus } = req.body;
+        const { title, description, deadline, priority, category, subtasks, context, energie, tijd_minuten, bestemming, focus, belangrijk } = req.body;
         if (!title) return res.status(400).json({ error: 'Titel verplicht' });
 
         await transaction(async (client) => {
             const taskResult = await client.query(
-                `INSERT INTO tasks (user_id, title, description, deadline, priority, category, context, energie, tijd_minuten, bestemming, focus)
-                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *`,
-                [userId, title, description || null, deadline || null, priority || 'mid', category || 'werk', context || null, energie || null, tijd_minuten || null, bestemming || null, focus || false]
+                `INSERT INTO tasks (user_id, title, description, deadline, priority, category, context, energie, tijd_minuten, bestemming, focus, belangrijk)
+                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING *`,
+                [userId, title, description || null, deadline || null, priority || 'mid', category || 'werk', context || null, energie || null, tijd_minuten || null, bestemming || null, focus || false, belangrijk || false]
             );
             const task = taskResult.rows[0];
 
@@ -150,7 +150,7 @@ router.patch('/:id', async (req, res) => {
         const taskId = req.params.id;
         const updates = req.body;
 
-        const allowedFields = ['title', 'description', 'deadline', 'priority', 'category', 'completed', 'context', 'energie', 'tijd_minuten', 'bestemming', 'focus'];
+        const allowedFields = ['title', 'description', 'deadline', 'priority', 'category', 'completed', 'context', 'energie', 'tijd_minuten', 'bestemming', 'focus', 'belangrijk'];
         const updateFields = [];
         const values = [taskId, userId];
         let paramIndex = 3;

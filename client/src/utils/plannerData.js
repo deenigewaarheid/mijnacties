@@ -88,6 +88,7 @@ export function getFilteredPlannerData(tasks, refDate = null) {
       if (dl && dl < today) return false  // overdue → eigen sectie
       if (dl === today) return true        // deadline vandaag
       if (t.focus && !dl) return true     // focus zonder deadline
+      if (t.belangrijk) return true        // belangrijk → altijd vandaag
       return false
     })
     .map(t => ({
