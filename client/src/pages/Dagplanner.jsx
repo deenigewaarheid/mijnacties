@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react'
+﻿?import { useState, useEffect } from 'react'
 import { Printer, Clock, Zap, CalendarDays, AlertCircle, Target, Calendar } from 'lucide-react'
 import api from '../api/client'
 import { getFilteredPlannerData, formatDate, localDateStr, dlStr } from '../utils/plannerData'
@@ -138,7 +138,7 @@ export default function Dagplanner() {
   return (
     <div className="max-w-4xl mx-auto bg-white dark:bg-gray-900 p-8">
 
-      {/* â”€â”€ Header (screen only) â”€â”€ */}
+      {/* ── Header (screen only) ── */}
       <div className="no-print mb-8 bg-white rounded-xl shadow-sm border border-gray-200 dark:bg-gray-900 dark:border-gray-700 px-8 pt-8 pb-6">
         <div className="flex items-start justify-between gap-4">
           <div>
@@ -185,19 +185,19 @@ export default function Dagplanner() {
         </div>
       </div>
 
-      {/* â”€â”€ PAGINA 1 â”€â”€ */}
+      {/* ── PAGINA 1 ── */}
       <div className="page-1">
 
         <div className="no-print-screen text-center pb-4 mb-8 border-b-4 border-gray-900">
           <h1 className="text-2xl font-bold uppercase tracking-tight">
-            DAGPLANNER â€” {todayLabel}
+            DAGPLANNER — {todayLabel}
           </h1>
         </div>
 
         {/* Vandaag */}
         <section className="section mb-8">
           <div className="flex items-center justify-between mb-3 pb-2 border-b-2 border-accent-200 dark:border-accent-700">
-            <h2 className="text-sm font-bold uppercase tracking-wide text-gray-700 dark:text-gray-300">ðŸ“… VANDAAG</h2>
+            <h2 className="text-sm font-bold uppercase tracking-wide text-gray-700 dark:text-gray-300">📅 VANDAAG</h2>
             <div className="no-print relative inline-flex items-center">
               <span className="text-xs border border-gray-300 rounded-lg px-2.5 py-1.5 pr-7 bg-white text-gray-700 select-none">
                 {(() => { const [y,m,d] = planDate.split('-'); return `${d}/${m}/${y}` })()}
@@ -230,10 +230,10 @@ export default function Dagplanner() {
                     <span className={checked ? 'line-through text-gray-400' : ''}>
                       {task.title}
                       {task._parentTask  && <span className="text-gray-500"> ({task._parentTask})</span>}
-                      {task._goalTitle   && <span className="text-gray-500 inline-flex items-center gap-0.5"> â€¢ <Target size={10} className="inline" /> {task._goalTitle}</span>}
-                      {task.context      && <span className="text-gray-600"> â€¢ {task.context}</span>}
-                      {task.tijd_minuten && <span className="text-gray-600"> â€¢ {task.tijd_minuten}min</span>}
-                      {task.priority     && <span className="text-gray-600"> â€¢ {PRIO_NL[task.priority] || task.priority}</span>}
+                      {task._goalTitle   && <span className="text-gray-500 inline-flex items-center gap-0.5"> • <Target size={10} className="inline" /> {task._goalTitle}</span>}
+                      {task.context      && <span className="text-gray-600"> • {task.context}</span>}
+                      {task.tijd_minuten && <span className="text-gray-600"> • {task.tijd_minuten}min</span>}
+                      {task.priority     && <span className="text-gray-600"> • {PRIO_NL[task.priority] || task.priority}</span>}
                     </span>
                   </label>
                   {task.subtasks?.length > 0 && (
@@ -243,7 +243,7 @@ export default function Dagplanner() {
                         const subChecked = isChecked(subKey)
                         return (
                           <div key={s.id} className="flex gap-1.5 items-start">
-                            <span className="flex-shrink-0 select-none">â””â”€</span>
+                            <span className="flex-shrink-0 select-none">└─</span>
                             <label className="flex gap-1.5 items-start cursor-pointer">
                               <input
                                 type="checkbox"
@@ -267,7 +267,7 @@ export default function Dagplanner() {
 
         {/* 2-minuten */}
         <section className="section mb-8">
-          <SectionHeader emoji="âš¡" title="2-MINUTEN TUSSENDOOR" />
+          <SectionHeader emoji="⚡" title="2-MINUTEN TUSSENDOOR" />
           <div className="space-y-2">
             {data.twoMinute.length === 0 ? (
               <p className="text-sm text-gray-500 italic">Geen 2-minuten taken</p>
@@ -285,8 +285,8 @@ export default function Dagplanner() {
                     />
                     <span className={checked ? 'line-through text-gray-400' : ''}>
                       {item.title}
-                      {item._goalTitle  && <span className="text-gray-500 inline-flex items-center gap-0.5"> â€¢ <Target size={10} className="inline" /> {item._goalTitle}</span>}
-                      {item.parentTask  && <span className="text-gray-600"> â†’ ({item.parentTask})</span>}
+                      {item._goalTitle  && <span className="text-gray-500 inline-flex items-center gap-0.5"> • <Target size={10} className="inline" /> {item._goalTitle}</span>}
+                      {item.parentTask  && <span className="text-gray-600"> → ({item.parentTask})</span>}
                     </span>
                   </label>
                 </div>
@@ -298,7 +298,7 @@ export default function Dagplanner() {
         {/* Achterstallig */}
         {data.overdue.length > 0 && (
           <section className="section mb-8">
-            <SectionHeader emoji="âš ï¸" title="ACHTERSTALLIG" />
+            <SectionHeader emoji="⚠️" title="ACHTERSTALLIG" />
             <div className="space-y-2">
               {data.overdue.map(task => {
                 const checked = isChecked(task.id)
@@ -314,11 +314,11 @@ export default function Dagplanner() {
                       />
                       <span className={checked ? 'line-through text-gray-400' : ''}>
                         {task.title}
-                        {task._goalTitle   && <span className="text-gray-500 inline-flex items-center gap-0.5"> â€¢ <Target size={10} className="inline" /> {task._goalTitle}</span>}
+                        {task._goalTitle   && <span className="text-gray-500 inline-flex items-center gap-0.5"> • <Target size={10} className="inline" /> {task._goalTitle}</span>}
                         {task._parentTask  && <span className="text-gray-500"> ({task._parentTask})</span>}
                         {task.deadline && (
                           <span className="text-gray-600">
-                            {' '}â€¢ Deadline was {formatDate(dlStr(task.deadline))} ({task.daysOverdue} {task.daysOverdue === 1 ? 'dag' : 'dagen'} te laat)
+                            {' '}• Deadline was {formatDate(dlStr(task.deadline))} ({task.daysOverdue} {task.daysOverdue === 1 ? 'dag' : 'dagen'} te laat)
                           </span>
                         )}
                       </span>
@@ -339,12 +339,12 @@ export default function Dagplanner() {
         </span>
       </div>
 
-      {/* â”€â”€ PAGINA 2 â”€â”€ */}
+      {/* ── PAGINA 2 ── */}
       <div className="page-2">
 
         {/* Morgen */}
         <section className="section mb-8">
-          <SectionHeader emoji="ðŸ“†" title={`MORGEN â€” ${tomorrowLabel}`} />
+          <SectionHeader emoji="📆" title={`MORGEN — ${tomorrowLabel}`} />
           <div className="space-y-2">
             {data.tomorrow.length === 0 ? (
               <p className="text-sm text-gray-500 italic">Geen taken gepland voor morgen</p>
@@ -363,9 +363,9 @@ export default function Dagplanner() {
                     <span className={checked ? 'line-through text-gray-400' : ''}>
                       {task.title}
                       {task._parentTask  && <span className="text-gray-500"> ({task._parentTask})</span>}
-                      {task._goalTitle   && <span className="text-gray-500 inline-flex items-center gap-0.5"> â€¢ <Target size={10} className="inline" /> {task._goalTitle}</span>}
-                      {task.context      && <span className="text-gray-600"> â€¢ {task.context}</span>}
-                      {task.tijd_minuten && <span className="text-gray-600"> â€¢ {task.tijd_minuten}min</span>}
+                      {task._goalTitle   && <span className="text-gray-500 inline-flex items-center gap-0.5"> • <Target size={10} className="inline" /> {task._goalTitle}</span>}
+                      {task.context      && <span className="text-gray-600"> • {task.context}</span>}
+                      {task.tijd_minuten && <span className="text-gray-600"> • {task.tijd_minuten}min</span>}
                     </span>
                   </label>
                 </div>
@@ -376,15 +376,15 @@ export default function Dagplanner() {
 
         {/* Deadlines */}
         <section className="section mb-8">
-          <SectionHeader emoji="ðŸ””" title="DEADLINES KOMENDE 7 DAGEN" />
+          <SectionHeader emoji="🔔" title="DEADLINES KOMENDE 7 DAGEN" />
           <div className="space-y-1">
             {data.deadlines.length === 0 ? (
               <p className="text-sm text-gray-500 italic">Geen deadlines in de komende week</p>
             ) : data.deadlines.map(item => (
               <div key={item.id} className="text-sm">
                 <span className="font-medium capitalize">{item.deadlineLabel}</span>
-                {' '}â€¢ {item.title}
-                {item._goalTitle  && <span className="text-gray-500 inline-flex items-center gap-0.5"> â€¢ <Target size={10} className="inline" /> {item._goalTitle}</span>}
+                {' '}• {item.title}
+                {item._goalTitle  && <span className="text-gray-500 inline-flex items-center gap-0.5"> • <Target size={10} className="inline" /> {item._goalTitle}</span>}
                 {item._parentTask && <span className="text-gray-500"> ({item._parentTask})</span>}
                 <span className="text-gray-600">
                   {' '}({item.daysUntil} {item.daysUntil === 1 ? 'dag' : 'dagen'})
@@ -396,11 +396,11 @@ export default function Dagplanner() {
 
         {/* Notities */}
         <section className="section">
-          <SectionHeader emoji="ðŸ“" title="NOTITIES" />
+          <SectionHeader emoji="📝" title="NOTITIES" />
           <textarea
             value={notities}
             onChange={e => setNotities(e.target.value)}
-            placeholder="Schrijf hier losse gedachten, ideeÃ«n of aantekeningen voor vandaag..."
+            placeholder="Schrijf hier losse gedachten, ideeën of aantekeningen voor vandaag..."
             rows={6}
             className="no-print w-full text-sm text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 resize-none focus:outline-none focus:border-accent-500 dark:focus:border-accent-500 placeholder-gray-300 dark:placeholder-gray-600 bg-white dark:bg-gray-800 leading-relaxed transition-colors"
           />
