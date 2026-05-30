@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
-import { Mail, CheckSquare, Settings, LogOut, RotateCcw, FolderKanban, LayoutDashboard, X, Plus, Trophy, Moon, Sun, CalendarDays, PenLine, HelpCircle } from 'lucide-react'
+import { Mail, CheckSquare, Settings, LogOut, RotateCcw, LayoutDashboard, X, Plus, Trophy, Moon, Sun, CalendarDays, PenLine, HelpCircle } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { useDarkMode } from '../context/DarkModeContext'
 import api from '../api/client'
@@ -13,7 +13,6 @@ const OVERZICHT = [
 
 const LIJSTEN = [
   { to: '/tasks',     icon: CheckSquare,  label: 'Taken',     badgeKey: 'losse' },
-  { to: '/projecten', icon: FolderKanban, label: 'Projecten', badgeKey: 'projecten' },
   { to: '/doelen',    icon: Trophy,       label: 'Doelen',    badgeKey: null },
 ]
 
