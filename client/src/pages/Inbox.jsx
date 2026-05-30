@@ -10,9 +10,9 @@ const PRIORITY_COLORS = {
   low:  'bg-accent-50 text-accent-700',
 }
 const PRIORITY_LABELS = { high: 'Hoog', mid: 'Gemiddeld', low: 'Laag' }
-const CATEGORY_COLORS = { werk: 'bg-accent-50 text-accent-700', 'privé': 'bg-pink-100 text-pink-700' }
+const CATEGORY_COLORS = { werk: 'bg-accent-50 text-accent-700', 'privé': 'bg-accent-100 text-accent-600' }
 const BESTEMMING_COLORS = {
-  actie: 'bg-accent-50 text-accent-700', kalender: 'bg-purple-100 text-purple-700',
+  actie: 'bg-accent-50 text-accent-700', kalender: 'bg-accent-100 text-accent-600',
   project: 'bg-orange-100 text-orange-700', wachten: 'bg-gray-100 text-gray-600',
   ooit: 'bg-gray-50 text-gray-500', weggooien: 'bg-red-50 text-red-500',
 }

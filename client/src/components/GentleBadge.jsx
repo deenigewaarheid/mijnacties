@@ -1,6 +1,6 @@
 const STYLES = {
   urgent:  'bg-orange-100 text-orange-700 ring-1 ring-orange-200',
-  info:    'bg-blue-50 text-blue-600',
+  info:    'bg-accent-50 text-accent-600',
   success: 'bg-green-50 text-green-600',
 }
 

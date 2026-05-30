@@ -82,11 +82,11 @@ function ProductivityInsights({ tasks }) {
       label: 'Focus score',
       value: `${focusScore}%`,
       sub: `${focusToday.length} van ${doneToday.length} hoog-prio vandaag`,
-      bg:     'from-purple-50 to-violet-50',
-      border: 'border-purple-100',
-      icon_c: 'text-purple-500',
-      num_c:  'text-purple-700',
-      lbl_c:  'text-purple-600',
+      bg:     'from-accent-50 to-accent-100',
+      border: 'border-accent-100',
+      icon_c: 'text-accent-500',
+      num_c:  'text-accent-700',
+      lbl_c:  'text-accent-600',
     },
     {
       icon: Zap,
@@ -216,7 +216,7 @@ const SECTION_COLORS = {
   gray:   { bg: 'bg-gray-100 dark:bg-gray-800',          icon: 'text-gray-500 dark:text-gray-400' },
   red:    { bg: 'bg-red-100 dark:bg-red-900/30',         icon: 'text-red-600 dark:text-red-400' },
   orange: { bg: 'bg-orange-100 dark:bg-orange-900/30',   icon: 'text-orange-600 dark:text-orange-400' },
-  violet: { bg: 'bg-violet-100 dark:bg-violet-900/30',   icon: 'text-violet-600 dark:text-violet-400' },
+  violet: { bg: 'bg-accent-100 dark:bg-accent-900/20',   icon: 'text-accent-600 dark:text-accent-400' },
 }
 
 function CollapsibleSection({ icon: Icon, title, color, tasks, expanded, onToggle, renderItem }) {
@@ -287,24 +287,24 @@ function FocusView({ tasks, loading }) {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl p-8 text-white text-center shadow-xl">
+      <div className="bg-gradient-to-br from-accent-600 to-accent-700 rounded-2xl p-8 text-white text-center shadow-xl">
         <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-5"
           style={{ background: 'rgba(255,255,255,0.2)' }}>
           <Target size={28} className="text-white" />
         </div>
 
         <h2 className="text-2xl font-bold mb-2">Jouw focus nu</h2>
-        <p className="text-purple-200 text-sm mb-8">
+        <p className="text-accent-100 text-sm mb-8">
           Alles andere is verborgen. Concentreer je hier op.
         </p>
 
         {loading ? (
           <div className="bg-white/10 rounded-xl p-5">
-            <p className="text-purple-200 text-sm">Laden...</p>
+            <p className="text-accent-100 text-sm">Laden...</p>
           </div>
         ) : nextAction ? (
           <div className="bg-white rounded-xl p-5 text-left">
-            <p className="text-xs font-semibold text-purple-500 uppercase tracking-wide mb-2">Volgende actie</p>
+            <p className="text-xs font-semibold text-accent-600 uppercase tracking-wide mb-2">Volgende actie</p>
             <p className="text-base font-semibold text-gray-900 mb-3 leading-snug">{nextAction.title}</p>
             <div className="flex items-center gap-2 flex-wrap">
               {nextAction.deadline && (

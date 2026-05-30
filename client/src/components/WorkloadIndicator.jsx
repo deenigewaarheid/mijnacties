@@ -8,11 +8,11 @@ const STATUS_CONFIG = {
     meta:   'text-green-600 dark:text-green-400',
   },
   blue: {
-    wrap:   'bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-900/50',
-    badge:  'bg-white text-blue-700',
-    bar:    'bg-blue-500',
-    text:   'text-blue-800 dark:text-blue-300',
-    meta:   'text-blue-600 dark:text-blue-400',
+    wrap:   'bg-accent-50 dark:bg-accent-950/30 border-accent-100 dark:border-accent-700/50',
+    badge:  'bg-white text-accent-700',
+    bar:    'bg-accent-500',
+    text:   'text-accent-700 dark:text-accent-300',
+    meta:   'text-accent-600 dark:text-accent-400',
   },
   orange: {
     wrap:   'bg-orange-50 dark:bg-orange-950/30 border-orange-200 dark:border-orange-900/50',

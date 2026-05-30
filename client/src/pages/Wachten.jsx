@@ -42,7 +42,7 @@ export default function Wachten() {
   return (
     <div className="max-w-xl">
       <div className="mb-5">
-        <h1 className="text-2xl font-bold text-blue-900">Wachten op</h1>
+        <h1 className="text-2xl font-bold text-accent-700">Wachten op</h1>
         <p className="text-sm text-gray-400 mt-0.5">Taken waarbij je wacht op iemand anders</p>
       </div>
 
@@ -67,7 +67,7 @@ export default function Wachten() {
                 isOverdue ? 'border-red-200' : isToday ? 'border-orange-200' : 'border-gray-100'
               }`}>
               <div className="flex items-start gap-3">
-                <Clock size={16} className="text-yellow-500 mt-0.5 flex-shrink-0" />
+                <Clock size={16} className="text-accent-400 mt-0.5 flex-shrink-0" />
                 <div className="flex-1 min-w-0">
                   <p className="font-medium text-gray-900 text-sm">{task.title}</p>
                   {task.description && (
@@ -87,11 +87,11 @@ export default function Wachten() {
                 </div>
                 <div className="flex flex-col gap-1 flex-shrink-0">
                   <button onClick={() => moveToActies(task.id)}
-                    className="text-xs text-blue-600 hover:text-blue-800 transition-colors whitespace-nowrap">
+                    className="text-xs text-accent-600 hover:text-accent-700 transition-colors whitespace-nowrap">
                     → Acties
                   </button>
                   <button onClick={() => markDone(task.id)}
-                    className="text-gray-200 hover:text-green-500 transition-colors self-end">
+                    className="text-gray-200 hover:text-accent-500 transition-colors self-end">
                     <Circle size={18} />
                   </button>
                 </div>

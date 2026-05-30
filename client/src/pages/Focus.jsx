@@ -3,11 +3,11 @@ import { CheckCircle2, Circle, Zap, Flame, Moon, Clock } from 'lucide-react'
 import api from '../api/client'
 
 const CONTEXT_COLORS = {
-  '@school':   'bg-blue-100 text-blue-700',
-  '@computer': 'bg-indigo-100 text-indigo-700',
-  '@telefoon': 'bg-green-100 text-green-700',
+  '@school':   'bg-accent-50 text-accent-700',
+  '@computer': 'bg-accent-100 text-accent-700',
+  '@telefoon': 'bg-accent-50 text-accent-600',
   '@overleg':  'bg-orange-100 text-orange-700',
-  '@thuis':    'bg-pink-100 text-pink-700',
+  '@thuis':    'bg-accent-100 text-accent-600',
 }
 const ENERGIE_COLORS = {
   hoog:   'bg-red-100 text-red-700',
@@ -62,19 +62,19 @@ export default function Focus() {
   return (
     <div>
       <div className="mb-5">
-        <h1 className="text-2xl font-bold text-blue-900">Wat doe ik nu?</h1>
+        <h1 className="text-2xl font-bold text-accent-700">Wat doe ik nu?</h1>
         <p className="text-sm text-gray-400 mt-0.5">Handmatig gefocust + hoge prioriteit binnen 4 dagen</p>
       </div>
 
       {contexts.length > 0 && (
         <div className="flex gap-1.5 mb-4 flex-wrap">
           <button onClick={() => setContext('')}
-            className={`px-3 py-1 text-xs rounded-full border transition-colors ${!contextFilter ? 'bg-blue-800 text-white border-blue-800' : 'text-gray-500 border-gray-200 hover:border-gray-400'}`}>
+            className={`px-3 py-1 text-xs rounded-full border transition-colors ${!contextFilter ? 'bg-accent-600 text-white border-accent-600' : 'text-gray-500 border-gray-200 hover:border-gray-400'}`}>
             Alles
           </button>
           {contexts.map(ctx => (
             <button key={ctx} onClick={() => setContext(ctx === contextFilter ? '' : ctx)}
-              className={`px-3 py-1 text-xs rounded-full border transition-colors ${contextFilter === ctx ? 'bg-blue-800 text-white border-blue-800' : 'text-gray-500 border-gray-200 hover:border-gray-400'}`}>
+              className={`px-3 py-1 text-xs rounded-full border transition-colors ${contextFilter === ctx ? 'bg-accent-600 text-white border-accent-600' : 'text-gray-500 border-gray-200 hover:border-gray-400'}`}>
               {ctx}
             </button>
           ))}
@@ -109,7 +109,7 @@ export default function Focus() {
                 <p className="font-medium text-gray-900 text-sm leading-snug">{task.title}</p>
                 <div className="flex items-center gap-1.5 mt-1 flex-wrap">
                   {task.context && (
-                    <span className={`text-xs px-2 py-0.5 rounded-full ${CONTEXT_COLORS[task.context] || 'bg-gray-100 text-gray-600'}`}>
+                    <span className={`text-xs px-2 py-0.5 rounded-full ${CONTEXT_COLORS[task.context] || 'bg-accent-50 text-accent-600'}`}>
                       {task.context}
                     </span>
                   )}
@@ -128,8 +128,8 @@ export default function Focus() {
                 </div>
               </div>
               <button onClick={() => markDone(task.id)}
-                className="text-gray-200 hover:text-green-500 transition-colors flex-shrink-0">
-                {isDone ? <CheckCircle2 size={20} className="text-green-400" /> : <Circle size={20} />}
+                className="text-gray-200 hover:text-accent-500 transition-colors flex-shrink-0">
+                {isDone ? <CheckCircle2 size={20} className="text-accent-500" /> : <Circle size={20} />}
               </button>
             </div>
           )

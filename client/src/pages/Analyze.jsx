@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+﻿import { useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ArrowLeft, Loader2, CheckCircle2, Trash2, Plus, Upload, FileText, X } from 'lucide-react'
 import api from '../api/client'
@@ -11,12 +11,12 @@ const PRIORITY_COLORS = {
 
 const CATEGORY_LABELS = {
   werk: 'Werk',
-  'privé': 'Privé',
+  'privÃ©': 'PrivÃ©',
 }
 
 const BESTEMMING_COLORS = {
-  actie:     'bg-blue-100 text-blue-700',
-  kalender:  'bg-purple-100 text-purple-700',
+  actie:     'bg-accent-100 text-accent-700',
+  kalender:  'bg-accent-50 text-accent-600',
   project:   'bg-orange-100 text-orange-700',
   wachten:   'bg-gray-100 text-gray-600',
   ooit:      'bg-gray-50 text-gray-500',
@@ -166,37 +166,37 @@ export default function Analyze() {
     <div className="max-w-2xl">
       <button
         onClick={() => navigate('/inbox')}
-        className="flex items-center gap-1 text-sm text-blue-700 hover:text-blue-900 mb-6"
+        className="flex items-center gap-1 text-sm text-accent-700 hover:text-accent-900 mb-6"
       >
         <ArrowLeft size={14} /> Terug naar inbox
       </button>
 
-      <h1 className="text-2xl font-bold text-blue-900 mb-2">Mail analyseren</h1>
+      <h1 className="text-2xl font-bold text-accent-700 mb-2">Mail analyseren</h1>
 
       {/* Steps */}
       <div className="flex items-center gap-3 mb-8">
         {[1, 2, 3].map(n => (
           <div key={n} className="flex items-center gap-2">
             <div className={`w-7 h-7 rounded-full flex items-center justify-center text-sm font-medium transition-colors ${
-              step >= n ? 'bg-blue-800 text-white' : 'bg-gray-200 text-gray-500'
+              step >= n ? 'bg-accent-600 text-white' : 'bg-gray-200 text-gray-500'
             }`}>{n}</div>
-            <span className={`text-sm ${step === n ? 'text-blue-900 font-medium' : 'text-gray-400'}`}>
+            <span className={`text-sm ${step === n ? 'text-accent-700 font-medium' : 'text-gray-400'}`}>
               {n === 1 ? 'Mail invoeren' : n === 2 ? 'AI analyseert' : 'Taken goedkeuren'}
             </span>
-            {n < 3 && <div className={`w-8 h-0.5 ${step > n ? 'bg-blue-800' : 'bg-gray-200'}`} />}
+            {n < 3 && <div className={`w-8 h-0.5 ${step > n ? 'bg-accent-600' : 'bg-gray-200'}`} />}
           </div>
         ))}
       </div>
 
       {/* Step 1 */}
       {step === 1 && (
-        <div className="bg-white border border-blue-100 rounded-2xl p-6">
+        <div className="bg-white border border-accent-100 rounded-2xl p-6">
           {/* Tabs */}
           <div className="flex gap-1 mb-6 bg-gray-100 p-1 rounded-lg w-fit">
             <button
               onClick={() => setInputTab('text')}
               className={`flex items-center gap-1.5 px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                inputTab === 'text' ? 'bg-white text-blue-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                inputTab === 'text' ? 'bg-white text-accent-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'
               }`}
             >
               <FileText size={14} /> Tekst plakken
@@ -204,7 +204,7 @@ export default function Analyze() {
             <button
               onClick={() => setInputTab('file')}
               className={`flex items-center gap-1.5 px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                inputTab === 'file' ? 'bg-white text-blue-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                inputTab === 'file' ? 'bg-white text-accent-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'
               }`}
             >
               <Upload size={14} /> Bestand uploaden
@@ -232,7 +232,7 @@ export default function Analyze() {
                       value={mail.body}
                       onChange={e => updateMail(i, 'body', e.target.value)}
                       placeholder="Plak hier de volledige mail..."
-                      className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                      className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent-500 resize-none"
                     />
                   </div>
                   <div className="grid grid-cols-2 gap-3">
@@ -243,7 +243,7 @@ export default function Analyze() {
                         value={mail.subject}
                         onChange={e => updateMail(i, 'subject', e.target.value)}
                         placeholder="Optioneel"
-                        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent-500"
                       />
                     </div>
                     <div>
@@ -253,7 +253,7 @@ export default function Analyze() {
                         value={mail.from}
                         onChange={e => updateMail(i, 'from', e.target.value)}
                         placeholder="naam@email.nl"
-                        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent-500"
                       />
                     </div>
                   </div>
@@ -263,7 +263,7 @@ export default function Analyze() {
               <button
                 type="button"
                 onClick={addMail}
-                className="flex items-center gap-1.5 text-sm text-blue-700 hover:text-blue-900 font-medium"
+                className="flex items-center gap-1.5 text-sm text-accent-700 hover:text-accent-900 font-medium"
               >
                 <Plus size={14} /> Nog een mail toevoegen
               </button>
@@ -272,7 +272,7 @@ export default function Analyze() {
 
               <button
                 type="submit"
-                className="w-full bg-blue-800 hover:bg-blue-900 text-white font-medium py-2.5 rounded-lg text-sm transition-colors"
+                className="w-full bg-accent-600 hover:bg-accent-700 text-white font-medium py-2.5 rounded-lg text-sm transition-colors"
               >
                 {mails.filter(m => m.body.trim()).length > 1
                   ? `${mails.filter(m => m.body.trim()).length} mails analyseren`
@@ -294,9 +294,9 @@ export default function Analyze() {
                   onChange={e => setFile(e.target.files[0] || null)}
                 />
                 {file ? (
-                  <div className="flex items-center gap-3 border border-blue-200 bg-blue-50 rounded-lg px-4 py-3">
-                    <FileText size={18} className="text-blue-700 flex-shrink-0" />
-                    <span className="text-sm text-blue-900 font-medium flex-1 truncate">{file.name}</span>
+                  <div className="flex items-center gap-3 border border-accent-100 bg-accent-50 rounded-lg px-4 py-3">
+                    <FileText size={18} className="text-accent-600 flex-shrink-0" />
+                    <span className="text-sm text-accent-700 font-medium flex-1 truncate">{file.name}</span>
                     <button type="button" onClick={() => setFile(null)} className="text-gray-400 hover:text-red-400">
                       <X size={15} />
                     </button>
@@ -305,7 +305,7 @@ export default function Analyze() {
                   <button
                     type="button"
                     onClick={() => fileInputRef.current.click()}
-                    className="w-full border-2 border-dashed border-gray-200 rounded-xl py-8 flex flex-col items-center gap-2 text-gray-400 hover:border-blue-300 hover:text-blue-500 transition-colors"
+                    className="w-full border-2 border-dashed border-gray-200 rounded-xl py-8 flex flex-col items-center gap-2 text-gray-400 hover:border-accent-300 hover:text-accent-500 transition-colors"
                   >
                     <Upload size={24} />
                     <span className="text-sm">Klik om een PDF of Word-bestand te kiezen</span>
@@ -322,7 +322,7 @@ export default function Analyze() {
                     value={fileSubject}
                     onChange={e => setFileSubject(e.target.value)}
                     placeholder="Optioneel"
-                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent-500"
                   />
                 </div>
                 <div>
@@ -332,7 +332,7 @@ export default function Analyze() {
                     value={fileFrom}
                     onChange={e => setFileFrom(e.target.value)}
                     placeholder="naam@email.nl"
-                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent-500"
                   />
                 </div>
               </div>
@@ -342,7 +342,7 @@ export default function Analyze() {
               <button
                 type="submit"
                 disabled={!file}
-                className="w-full bg-blue-800 hover:bg-blue-900 disabled:bg-gray-300 text-white font-medium py-2.5 rounded-lg text-sm transition-colors"
+                className="w-full bg-accent-600 hover:bg-accent-700 disabled:bg-gray-300 text-white font-medium py-2.5 rounded-lg text-sm transition-colors"
               >
                 Bestand analyseren
               </button>
@@ -353,9 +353,9 @@ export default function Analyze() {
 
       {/* Step 2 */}
       {step === 2 && (
-        <div className="bg-white border border-blue-100 rounded-2xl p-12 flex flex-col items-center">
-          <Loader2 size={40} className="text-blue-700 animate-spin mb-4" />
-          <p className="text-blue-900 font-medium">{loadingMsg}</p>
+        <div className="bg-white border border-accent-100 rounded-2xl p-12 flex flex-col items-center">
+          <Loader2 size={40} className="text-accent-600 animate-spin mb-4" />
+          <p className="text-accent-700 font-medium">{loadingMsg}</p>
           <p className="text-gray-400 text-sm mt-1">Even geduld</p>
         </div>
       )}
@@ -364,16 +364,16 @@ export default function Analyze() {
       {step === 3 && (
         <div className="space-y-4">
           {results.length > 1 && (
-            <div className="bg-white border border-blue-100 rounded-2xl p-4">
-              <p className="text-sm text-blue-800 font-medium">{results.length} mails geanalyseerd</p>
+            <div className="bg-white border border-accent-100 rounded-2xl p-4">
+              <p className="text-sm text-accent-700 font-medium">{results.length} mails geanalyseerd</p>
             </div>
           )}
 
           {results.length === 1 && (
-            <div className="bg-white border border-blue-100 rounded-2xl p-6">
+            <div className="bg-white border border-accent-100 rounded-2xl p-6">
               <h2 className="font-semibold text-gray-800 mb-2">Gedetecteerd</h2>
               <div className="flex gap-2">
-                <span className="text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-700">
+                <span className="text-xs px-2 py-0.5 rounded-full bg-accent-100 text-accent-700">
                   {CATEGORY_LABELS[results[0]?.category] || results[0]?.category}
                 </span>
                 <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${PRIORITY_COLORS[results[0]?.priority]}`}>
@@ -383,7 +383,7 @@ export default function Analyze() {
             </div>
           )}
 
-          <div className="bg-white border border-blue-100 rounded-2xl p-6">
+          <div className="bg-white border border-accent-100 rounded-2xl p-6">
             <h2 className="font-semibold text-gray-800 mb-4">
               Gevonden taken ({allTasks.filter(t => t.selected).length} geselecteerd)
             </h2>
@@ -396,22 +396,22 @@ export default function Analyze() {
               {allTasks.map(task => (
                 <div key={task._id} className={`border rounded-xl p-4 transition-colors ${
                   task.bestemming === 'weggooien' ? 'border-red-100 bg-red-50 opacity-60' :
-                  task.bestemming === 'kalender'  ? 'border-purple-200 bg-purple-50' :
-                  task.selected ? 'border-blue-200 bg-blue-50' : 'border-gray-200 bg-gray-50 opacity-60'
+                  task.bestemming === 'kalender'  ? 'border-accent-100 bg-accent-50' :
+                  task.selected ? 'border-accent-100 bg-accent-50' : 'border-gray-200 bg-gray-50 opacity-60'
                 }`}>
                   <div className="flex items-start gap-3">
                     <input
                       type="checkbox"
                       checked={task.selected}
                       onChange={() => toggleTask(task._id)}
-                      className="mt-1 accent-blue-700"
+                      className="mt-1 accent-accent-700"
                     />
                     <div className="flex-1 min-w-0">
                       <input
                         type="text"
                         value={task.title}
                         onChange={e => updateTask(task._id, 'title', e.target.value)}
-                        className="w-full font-medium text-gray-900 bg-transparent border-b border-transparent hover:border-blue-300 focus:border-blue-500 focus:outline-none text-sm pb-0.5"
+                        className="w-full font-medium text-gray-900 bg-transparent border-b border-transparent hover:border-accent-300 focus:border-accent-500 focus:outline-none text-sm pb-0.5"
                       />
                       {/* Original title if different */}
                       {task.originalTitle && task.originalTitle !== task.title && (
@@ -419,7 +419,7 @@ export default function Analyze() {
                       )}
                       {/* Calendar warning */}
                       {task.bestemming === 'kalender' && (
-                        <p className="text-xs text-purple-700 mt-1">Dit hoort in je agenda, niet in je takenlijst.</p>
+                        <p className="text-xs text-accent-600 mt-1">Dit hoort in je agenda, niet in je takenlijst.</p>
                       )}
                       {task.description && (
                         <p className="text-xs text-gray-500 mt-1">{task.description}</p>
@@ -441,7 +441,7 @@ export default function Analyze() {
                             lang="nl"
                             value={task.deadline?.split(' ')[0] || ''}
                             onChange={e => updateTask(task._id, 'deadline', e.target.value)}
-                            className="text-xs text-gray-500 bg-transparent border border-gray-200 rounded px-2 py-0.5 focus:outline-none focus:ring-1 focus:ring-blue-400"
+                            className="text-xs text-gray-500 bg-transparent border border-gray-200 rounded px-2 py-0.5 focus:outline-none focus:ring-1 focus:ring-accent-400"
                           />
                         )}
                         <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${PRIORITY_COLORS[task.priority] || PRIORITY_COLORS.mid}`}>
@@ -475,7 +475,7 @@ export default function Analyze() {
             </button>
             <button
               onClick={handleApprove}
-              className="flex-1 bg-blue-800 hover:bg-blue-900 text-white font-medium py-2.5 rounded-lg text-sm transition-colors flex items-center justify-center gap-2"
+              className="flex-1 bg-accent-600 hover:bg-accent-700 text-white font-medium py-2.5 rounded-lg text-sm transition-colors flex items-center justify-center gap-2"
             >
               <CheckCircle2 size={16} />
               Goedkeuren en opslaan
@@ -486,3 +486,4 @@ export default function Analyze() {
     </div>
   )
 }
+

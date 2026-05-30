@@ -77,13 +77,13 @@ function ProductivityHeatmap({ completedTasks }) {
 
       {/* Best hours insight */}
       {bestHours.length > 0 && (
-        <div className="mt-4 bg-blue-50 dark:bg-blue-950/40 border border-blue-100 dark:border-blue-900/50 rounded-xl px-4 py-3 flex items-start gap-3">
+        <div className="mt-4 bg-accent-50 dark:bg-accent-950/40 border border-accent-100 dark:border-accent-700/50 rounded-xl px-4 py-3 flex items-start gap-3">
           <span className="text-base leading-none flex-shrink-0 mt-0.5">💡</span>
           <div>
-            <p className="text-sm font-medium text-blue-800 dark:text-blue-300">
+            <p className="text-sm font-medium text-accent-700 dark:text-accent-300">
               Jouw beste tijden
             </p>
-            <p className="text-xs text-blue-600 dark:text-blue-400 mt-0.5">
+            <p className="text-xs text-accent-600 dark:text-accent-400 mt-0.5">
               {bestHours.join(' · ')}
             </p>
           </div>
@@ -155,8 +155,8 @@ export default function Insights() {
           {/* Heatmap card */}
           <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-6 py-5">
             <div className="flex items-center gap-2 mb-5">
-              <div className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-950/40 flex items-center justify-center">
-                <Clock size={15} className="text-blue-500" />
+              <div className="w-8 h-8 rounded-lg bg-accent-50 dark:bg-accent-950/40 flex items-center justify-center">
+                <Clock size={15} className="text-accent-500" />
               </div>
               <div>
                 <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">Productiviteit per uur</p>
@@ -185,8 +185,8 @@ export default function Insights() {
           {/* Day-of-week breakdown */}
           <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-6 py-5">
             <div className="flex items-center gap-2 mb-5">
-              <div className="w-8 h-8 rounded-lg bg-purple-50 dark:bg-purple-950/40 flex items-center justify-center">
-                <BarChart2 size={15} className="text-purple-500" />
+              <div className="w-8 h-8 rounded-lg bg-accent-50 dark:bg-accent-950/40 flex items-center justify-center">
+                <BarChart2 size={15} className="text-accent-500" />
               </div>
               <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">Productiviteit per weekdag</p>
             </div>

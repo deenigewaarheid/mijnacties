@@ -5,7 +5,7 @@ import { useConfirm } from '../components/ConfirmDialog'
 
 const GOAL_COLORS = [
   { bg: 'bg-accent-600', light: 'bg-accent-50',  border: 'border-accent-200', text: 'text-accent-700', bar: 'bg-accent-500' },
-  { bg: 'bg-violet-500', light: 'bg-violet-50',  border: 'border-violet-200', text: 'text-violet-700', bar: 'bg-violet-500' },
+  { bg: 'bg-accent-500', light: 'bg-accent-50',  border: 'border-accent-100', text: 'text-accent-700', bar: 'bg-accent-500' },
   { bg: 'bg-emerald-500',light: 'bg-emerald-50', border: 'border-emerald-200',text: 'text-emerald-700',bar: 'bg-emerald-500' },
   { bg: 'bg-orange-500', light: 'bg-orange-50',  border: 'border-orange-200', text: 'text-orange-700', bar: 'bg-orange-500' },
   { bg: 'bg-rose-500',   light: 'bg-rose-50',    border: 'border-rose-200',   text: 'text-rose-700',   bar: 'bg-rose-500' },

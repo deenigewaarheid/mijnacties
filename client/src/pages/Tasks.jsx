@@ -351,11 +351,11 @@ function TaskItem({ task, onToggle, onSubtaskToggle, onDelete, onUpdate, onSubta
 
   // ── Display mode ──────────────────────────────────────────────────────────
   return (
-    <div className={`group relative bg-white dark:bg-gray-900 border border-l-4 ${borderColor} rounded-xl px-4 py-3.5 transition-all duration-200 ${
-      isSelected ? 'border-accent-300 dark:border-accent-700 bg-accent-50 dark:bg-accent-950/20' :
-      'border-gray-100 dark:border-gray-800 hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-sm'
+    <div className={`group relative rounded-lg px-2 py-2 transition-colors duration-150 ${
+      isSelected ? 'bg-accent-50 dark:bg-accent-950/20' :
+      'hover:bg-gray-50 dark:hover:bg-gray-800/50'
     } ${isCompleting ? 'opacity-0 scale-95 translate-x-4' : 'opacity-100 scale-100'}`}>
-      <div className="flex items-start gap-3">
+      <div className="flex items-start gap-2">
 
         {/* Multi-select checkbox */}
         {onSelect && (
@@ -364,49 +364,46 @@ function TaskItem({ task, onToggle, onSubtaskToggle, onDelete, onUpdate, onSubta
             checked={isSelected}
             onChange={() => onSelect(task.id)}
             onClick={e => e.stopPropagation()}
-            className="mt-1 w-4 h-4 flex-shrink-0 cursor-pointer"
+            className="mt-0.5 w-3.5 h-3.5 flex-shrink-0 cursor-pointer"
             style={{ accentColor: '#0f6e56' }}
           />
         )}
 
         {/* Completion toggle */}
         <button onClick={() => task.completed ? onToggle(task.id, false) : handleComplete()}
-          className={`mt-0.5 flex-shrink-0 transition-colors ${task.completed ? 'text-green-400' : 'text-gray-200 hover:text-gray-500 dark:hover:text-gray-400'}`}>
-          {task.completed
-            ? <CheckCircle2 size={18} />
-            : <Circle size={18} />}
+          className={`mt-0.5 flex-shrink-0 transition-colors ${task.completed ? 'text-green-400' : 'text-gray-200 hover:text-gray-400 dark:hover:text-gray-500'}`}>
+          {task.completed ? <CheckCircle2 size={16} /> : <Circle size={16} />}
         </button>
 
         {/* Body */}
         <div className="flex-1 min-w-0">
-          <span className={`text-sm font-medium leading-snug transition-all duration-300 ${task.completed ? 'line-through text-gray-400 dark:text-gray-600' : 'text-gray-900 dark:text-gray-100'}`}>
+          <span className={`text-sm leading-snug transition-all duration-300 ${task.completed ? 'line-through text-gray-400 dark:text-gray-600' : 'text-gray-800 dark:text-gray-200'}`}>
             {task.title}
           </span>
 
-          {/* Meta row — only filled fields */}
+          {/* Inline meta — context · energie · tijd */}
           {hasMeta && (
-            <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
-              {task.context && (
-                <Chip className="bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400">
-                  {task.context}
-                </Chip>
-              )}
+            <div className="flex items-center gap-1.5 mt-0.5 text-[11px] text-gray-400 dark:text-gray-500">
+              {task.context && <span>{task.context}</span>}
+              {task.context && (task.energie || task.tijd_minuten) && <span className="text-gray-200 dark:text-gray-700">·</span>}
               {task.energie && (
-                <Chip className="bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400">
-                  {task.energie === 'hoog' ? <Flame size={10} /> : task.energie === 'laag' ? <Moon size={10} /> : <Zap size={10} />}{task.energie}
-                </Chip>
+                <span className="flex items-center gap-0.5">
+                  {task.energie === 'hoog' ? <Flame size={9} /> : task.energie === 'laag' ? <Moon size={9} /> : <Zap size={9} />}
+                  {task.energie}
+                </span>
               )}
+              {task.energie && task.tijd_minuten && <span className="text-gray-200 dark:text-gray-700">·</span>}
               {task.tijd_minuten && (
-                <Chip className="bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400">
-                  <Clock size={10} />{task.tijd_minuten}m
-                </Chip>
+                <span className="flex items-center gap-0.5">
+                  <Clock size={9} />{task.tijd_minuten} m
+                </span>
               )}
             </div>
           )}
 
-          {/* Note preview */}
+          {/* Note — italic, small */}
           {task.description && (
-            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1.5 leading-relaxed line-clamp-1">
+            <p className="text-[11px] italic text-gray-400 dark:text-gray-500 mt-0.5 line-clamp-1">
               {task.description}
             </p>
           )}
@@ -414,23 +411,21 @@ function TaskItem({ task, onToggle, onSubtaskToggle, onDelete, onUpdate, onSubta
           {/* Subtask toggle */}
           {subs.length > 0 && (
             <button onClick={() => setOpen(o => !o)}
-              className="mt-2 flex items-center gap-1.5 text-xs text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
-              {open ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
+              className="mt-1 flex items-center gap-1.5 text-[11px] text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
+              {open ? <ChevronDown size={11} /> : <ChevronRight size={11} />}
               <span>
-                {openSubs > 0
-                  ? `${openSubs} van ${subs.length} subtaken`
-                  : `${subs.length} subtaken ✓`}
+                {openSubs > 0 ? `${openSubs} van ${subs.length} subtaken` : `${subs.length} subtaken ✓`}
               </span>
-              <div className="w-16 h-1 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden ml-1">
+              <div className="w-12 h-0.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden ml-0.5">
                 <div className="h-full bg-accent-400 rounded-full transition-all"
                   style={{ width: `${Math.round(((subs.length - openSubs) / subs.length) * 100)}%` }} />
               </div>
             </button>
           )}
 
-          {/* Subtasks */}
+          {/* Subtasks expanded */}
           {open && subs.length > 0 && (
-            <div className="mt-2 pl-3 border-l-2 border-gray-100 dark:border-gray-800 space-y-0.5">
+            <div className="mt-1.5 pl-3 border-l border-gray-100 dark:border-gray-800 space-y-0.5">
               {subs.map(sub => (
                 <SubtaskItem key={sub.id} sub={sub} taskId={task.id}
                   onToggle={onSubtaskToggle}
@@ -441,44 +436,42 @@ function TaskItem({ task, onToggle, onSubtaskToggle, onDelete, onUpdate, onSubta
           )}
         </div>
 
-        {/* Right: deadline + priority chip + hover actions */}
-        <div className="flex-shrink-0 flex flex-col items-end gap-1 mt-0.5">
-          <div className="flex items-center gap-1">
-            {task.deadline && (
-              <span className={`text-xs tabular-nums flex items-center gap-1 ${
-                isOverdue ? 'text-red-500 font-semibold' :
-                dl === 0   ? 'text-orange-500 font-medium' :
-                dl === 1   ? 'text-amber-500 font-medium' :
-                             'text-gray-400 dark:text-gray-500'
-              }`}>
-                {isOverdue && <AlertCircle size={10} />}
-                {isOverdue ? `${Math.abs(dl)} d te laat` :
-                 dl === 0  ? 'vandaag' :
-                 dl === 1  ? 'morgen' :
-                             fmtDate(task.deadline)}
-              </span>
-            )}
-            <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-              <button onClick={e => { e.stopPropagation(); onFocusToggle(task.id, !task.focus) }}
-                title={task.focus ? 'Verwijder uit focus' : 'Voeg toe aan focus'}
-                className={`p-1.5 rounded-lg transition-colors ${isFocused ? 'text-orange-400' : 'text-gray-300 hover:text-orange-400'}`}>
-                <Target size={14} fill={isFocused ? 'currentColor' : 'none'} />
-              </button>
-              <button onClick={startEdit}
-                className="p-1.5 rounded-lg text-gray-300 hover:text-gray-600 dark:hover:text-gray-400 transition-colors">
-                <Pencil size={14} />
-              </button>
-              <button onClick={e => { e.stopPropagation(); onDelete(task.id) }}
-                className="p-1.5 rounded-lg text-gray-300 hover:text-red-400 transition-colors">
-                <Trash2 size={14} />
-              </button>
-            </div>
-          </div>
+        {/* Right: datum + Hoog badge + hover acties — alles op één rij */}
+        <div className="flex items-center gap-1.5 flex-shrink-0 mt-0.5">
+          {task.deadline && (
+            <span className={`text-[11px] tabular-nums flex items-center gap-0.5 ${
+              isOverdue ? 'text-red-500 font-semibold' :
+              dl === 0   ? 'text-orange-500 font-medium' :
+              dl === 1   ? 'text-amber-500 font-medium' :
+                           'text-gray-400 dark:text-gray-500'
+            }`}>
+              {isOverdue && <AlertCircle size={9} />}
+              {isOverdue ? `${Math.abs(dl)} d te laat` :
+               dl === 0  ? 'vandaag' :
+               dl === 1  ? 'morgen' :
+                           fmtDate(task.deadline)}
+            </span>
+          )}
           {task.priority === 'high' && !task.completed && (
-            <span className={`text-xs px-1.5 py-0.5 rounded-md font-medium ${PRIO_CHIP.high}`}>
+            <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${PRIO_CHIP.high}`}>
               {PRIO_LABEL.high}
             </span>
           )}
+          <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+            <button onClick={e => { e.stopPropagation(); onFocusToggle(task.id, !task.focus) }}
+              title={task.focus ? 'Verwijder uit focus' : 'Voeg toe aan focus'}
+              className={`p-1 rounded transition-colors ${isFocused ? 'text-orange-400' : 'text-gray-300 hover:text-orange-400'}`}>
+              <Target size={12} fill={isFocused ? 'currentColor' : 'none'} />
+            </button>
+            <button onClick={startEdit}
+              className="p-1 rounded text-gray-300 hover:text-gray-600 dark:hover:text-gray-400 transition-colors">
+              <Pencil size={12} />
+            </button>
+            <button onClick={e => { e.stopPropagation(); onDelete(task.id) }}
+              className="p-1 rounded text-gray-300 hover:text-red-400 transition-colors">
+              <Trash2 size={12} />
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -493,27 +486,23 @@ function GoalActionItem({ action, onToggle }) {
   const isOverdue    = days !== null && days < 0
 
   return (
-    <div className="group relative bg-violet-50 dark:bg-violet-950/30 border border-violet-100 dark:border-violet-900/40 border-l-4 border-l-violet-400 rounded-xl px-4 py-3.5 hover:border-violet-200 hover:shadow-sm transition-all">
-      <div className="flex items-start gap-3">
-        <button onClick={() => onToggle(action.goalId, action.id)}
-          className="mt-0.5 flex-shrink-0 text-violet-300 hover:text-violet-500 transition-colors">
-          <Circle size={18} />
-        </button>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-baseline gap-2">
-            <span className="text-sm font-medium text-gray-900 dark:text-gray-100">{action.title}</span>
-            {deadlineDate && (
-              <span className={`inline-flex items-center gap-1 text-xs ${isOverdue ? 'text-red-500 font-medium' : 'text-gray-400'}`}>
-                {isOverdue && <AlertCircle size={11} />}
-                {isOverdue ? `${Math.abs(days)}d verlopen` : `· ${fmtDate(action.deadline)}`}
-              </span>
-            )}
-          </div>
-          <Chip className="mt-1.5 bg-violet-100 dark:bg-violet-900/40 text-violet-600 dark:text-violet-400">
-            <Trophy size={9} /> {action.goalTitle}
-          </Chip>
+    <div className="group flex items-start gap-2 px-2 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors cursor-pointer">
+      <button onClick={() => onToggle(action.goalId, action.id)}
+        className="mt-0.5 flex-shrink-0 text-accent-300 hover:text-accent-500 transition-colors">
+        <Circle size={16} />
+      </button>
+      <div className="flex-1 min-w-0">
+        <span className="text-sm text-gray-800 dark:text-gray-200 leading-snug">{action.title}</span>
+        <div className="flex items-center gap-1 mt-0.5 text-[11px] text-accent-500 dark:text-accent-400">
+          <Trophy size={9} /> {action.goalTitle}
         </div>
       </div>
+      {deadlineDate && (
+        <span className={`text-[11px] flex items-center gap-0.5 flex-shrink-0 mt-0.5 ${isOverdue ? 'text-red-500 font-semibold' : 'text-gray-400'}`}>
+          {isOverdue && <AlertCircle size={9} />}
+          {isOverdue ? `${Math.abs(days)}d verlopen` : fmtDate(action.deadline)}
+        </span>
+      )}
     </div>
   )
 }
@@ -525,7 +514,7 @@ const URGENCY_ZONES = [
   { label: 'Vandaag & morgen', color: 'text-orange-600',  test: d => d !== null && d >= 0 && d <= 1 },
   { label: '2 – 3 dagen',      color: 'text-orange-500',  test: d => d !== null && d >= 2 && d <= 3 },
   { label: '4 – 7 dagen',      color: 'text-amber-600',   test: d => d !== null && d >= 4 && d <= 7 },
-  { label: '8 – 14 dagen',     color: 'text-blue-600',    test: d => d !== null && d >= 8 && d <= 14 },
+  { label: '8 – 14 dagen',     color: 'text-accent-600',  test: d => d !== null && d >= 8 && d <= 14 },
   { label: 'Meer dan 2 weken', color: 'text-emerald-600', test: d => d !== null && d > 14 },
   { label: 'Geen deadline',    color: 'text-gray-400',    test: d => d === null },
 ]
@@ -592,34 +581,34 @@ function FocusTab() {
         </div>
       )}
 
-      <div className="space-y-2">
+      <div className="space-y-0">
         {visible.map((task, i) => {
           const dl        = task.deadline ? getDaysLeft(task.deadline) : null
           const isOverdue = dl !== null && dl < 0
           const isDone    = done.includes(task.id)
           return (
             <div key={task.id}
-              className={`group flex items-center gap-4 bg-white dark:bg-gray-900 border rounded-xl px-5 py-4 transition-all ${
-                isDone      ? 'opacity-40 scale-95' :
-                isOverdue   ? 'border-red-200 dark:border-red-800' :
-                dl === 0    ? 'border-orange-200 dark:border-orange-800' :
-                              'border-gray-100 dark:border-gray-800'
-              }`}>
-              <span className="text-3xl font-black text-gray-100 dark:text-gray-800 w-8 flex-shrink-0 select-none">{i + 1}</span>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900 dark:text-gray-100 leading-snug">{task.title}</p>
-                <div className="flex items-center gap-2 mt-1.5 flex-wrap">
-                  {task.context    && <Chip className="bg-gray-50 dark:bg-gray-800 text-gray-500">{task.context}</Chip>}
-                  {task.energie    && <Chip className="bg-gray-50 dark:bg-gray-800 text-gray-500">{task.energie === 'hoog' ? <Flame size={10} /> : task.energie === 'laag' ? <Moon size={10} /> : <Zap size={10} />}{task.energie}</Chip>}
-                  {task.tijd_minuten && <Chip className="bg-gray-50 dark:bg-gray-800 text-gray-500"><Clock size={10} />{task.tijd_minuten}m</Chip>}
-                  {isOverdue       && <span className="text-xs text-red-500 font-medium">{Math.abs(dl)}d verlopen</span>}
-                  {dl === 0        && <span className="text-xs text-orange-500 font-medium">Vandaag</span>}
-                </div>
-              </div>
+              className={`flex items-start gap-2 px-2 py-2 rounded-lg transition-all ${isDone ? 'opacity-40' : 'hover:bg-gray-50 dark:hover:bg-gray-800/50'}`}>
+              <span className="text-xs font-bold text-gray-200 dark:text-gray-700 w-4 flex-shrink-0 mt-0.5 select-none text-right">{i + 1}</span>
               <button onClick={() => markDone(task.id)}
-                className={`transition-colors flex-shrink-0 ${isDone ? 'text-green-400' : 'text-gray-200 hover:text-green-500'}`}>
-                {isDone ? <CheckCircle2 size={22} /> : <Circle size={22} />}
+                className={`mt-0.5 flex-shrink-0 transition-colors ${isDone ? 'text-green-400' : 'text-gray-200 hover:text-green-500'}`}>
+                {isDone ? <CheckCircle2 size={16} /> : <Circle size={16} />}
               </button>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm text-gray-800 dark:text-gray-200 leading-snug">{task.title}</p>
+                {(task.context || task.energie || task.tijd_minuten) && (
+                  <div className="flex items-center gap-1.5 mt-0.5 text-[11px] text-gray-400 dark:text-gray-500">
+                    {task.context && <span>{task.context}</span>}
+                    {task.context && (task.energie || task.tijd_minuten) && <span className="text-gray-200">·</span>}
+                    {task.energie && <span className="flex items-center gap-0.5">{task.energie === 'hoog' ? <Flame size={9} /> : task.energie === 'laag' ? <Moon size={9} /> : <Zap size={9} />}{task.energie}</span>}
+                    {task.energie && task.tijd_minuten && <span className="text-gray-200">·</span>}
+                    {task.tijd_minuten && <span className="flex items-center gap-0.5"><Clock size={9} />{task.tijd_minuten} m</span>}
+                  </div>
+                )}
+              </div>
+              <span className={`text-[11px] flex-shrink-0 mt-0.5 ${isOverdue ? 'text-red-500 font-semibold' : dl === 0 ? 'text-orange-500 font-medium' : 'text-gray-400'}`}>
+                {isOverdue ? `${Math.abs(dl)}d te laat` : dl === 0 ? 'vandaag' : dl === 1 ? 'morgen' : task.deadline ? fmtDate(task.deadline) : ''}
+              </span>
             </div>
           )
         })}
@@ -678,32 +667,30 @@ function WachtenTab() {
           <p className="text-sm">Geen taken in de wachtrij.</p>
         </div>
       )}
-      <div className="space-y-2">
+      <div className="space-y-0">
         {tasks.map(task => {
           const dl = task.deadline ? getDaysLeft(task.deadline) : null
           const isOverdue = dl !== null && dl < 0
           return (
-            <div key={task.id}
-              className={`group bg-white dark:bg-gray-900 border border-l-4 border-l-yellow-400 rounded-xl px-4 py-3.5 transition-all hover:shadow-sm ${isOverdue ? 'border-red-200 dark:border-red-800' : 'border-gray-100 dark:border-gray-800'}`}>
-              <div className="flex items-start gap-3">
-                <Clock size={16} className="text-yellow-400 mt-0.5 flex-shrink-0" />
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{task.title}</p>
-                  {task.description && <p className="text-xs text-gray-400 mt-1 leading-relaxed">{task.description}</p>}
-                  {dl !== null && (
-                    <p className={`text-xs mt-1.5 font-medium ${isOverdue ? 'text-red-500' : dl === 0 ? 'text-orange-500' : 'text-gray-400'}`}>
-                      {isOverdue ? `${Math.abs(dl)}d verlopen` : dl === 0 ? 'Vandaag' : `over ${dl}d`}
-                    </p>
-                  )}
-                </div>
-                <div className="flex flex-col gap-1.5 flex-shrink-0 items-end">
+            <div key={task.id} className="group flex items-start gap-2 px-2 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+              <Clock size={14} className="text-accent-400 mt-0.5 flex-shrink-0" />
+              <div className="flex-1 min-w-0">
+                <p className="text-sm text-gray-800 dark:text-gray-200 leading-snug">{task.title}</p>
+                {task.description && <p className="text-[11px] italic text-gray-400 mt-0.5">{task.description}</p>}
+              </div>
+              <div className="flex items-center gap-2 flex-shrink-0 mt-0.5">
+                {dl !== null && (
+                  <span className={`text-[11px] ${isOverdue ? 'text-red-500 font-semibold' : dl === 0 ? 'text-orange-500' : 'text-gray-400'}`}>
+                    {isOverdue ? `${Math.abs(dl)}d te laat` : dl === 0 ? 'vandaag' : `over ${dl}d`}
+                  </span>
+                )}
+                <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
                   <button onClick={() => toActies(task.id)}
-                    className="text-xs text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors flex items-center gap-1">
-                    <ArrowRight size={12} /> Acties
+                    className="text-[11px] text-gray-400 hover:text-accent-600 transition-colors flex items-center gap-0.5">
+                    <ArrowRight size={11} /> Actie
                   </button>
-                  <button onClick={() => markDone(task.id)}
-                    className="text-gray-200 hover:text-green-500 transition-colors">
-                    <Circle size={18} />
+                  <button onClick={() => markDone(task.id)} className="p-1 text-gray-300 hover:text-green-500 transition-colors">
+                    <Circle size={14} />
                   </button>
                 </div>
               </div>
@@ -770,22 +757,21 @@ function OoitTab() {
           <p className="text-sm">Geen ooit/misschien-ideeën.</p>
         </div>
       )}
-      <div className="space-y-2">
+      <div className="space-y-0">
         {tasks.map(task => (
-          <div key={task.id}
-            className="group bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 border-l-4 border-l-purple-300 rounded-xl px-4 py-3.5 flex items-center gap-3 hover:border-gray-200 hover:shadow-sm transition-all">
-            <Sparkles size={15} className="text-purple-300 flex-shrink-0" />
+          <div key={task.id} className="group flex items-start gap-2 px-2 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+            <Sparkles size={13} className="text-accent-300 mt-0.5 flex-shrink-0" />
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{task.title}</p>
-              {task.description && <p className="text-xs text-gray-400 mt-0.5 leading-relaxed">{task.description}</p>}
+              <p className="text-sm text-gray-800 dark:text-gray-200 leading-snug">{task.title}</p>
+              {task.description && <p className="text-[11px] italic text-gray-400 mt-0.5">{task.description}</p>}
             </div>
-            <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
+            <div className="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0 mt-0.5">
               <button onClick={() => toActies(task.id)}
-                className="text-xs text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 flex items-center gap-1 transition-colors">
-                <ArrowRight size={12} /> Actie
+                className="text-[11px] text-gray-400 hover:text-accent-600 flex items-center gap-0.5 transition-colors">
+                <ArrowRight size={11} /> Actie
               </button>
-              <button onClick={() => remove(task.id)} className="text-gray-300 hover:text-red-400 transition-colors">
-                <X size={14} />
+              <button onClick={() => remove(task.id)} className="p-1 text-gray-300 hover:text-red-400 transition-colors">
+                <X size={12} />
               </button>
             </div>
           </div>
@@ -833,8 +819,8 @@ function LosseEindjesTab({ onProcessed }) {
 
   const BESTEMMINGEN = [
     { key: 'actie',   label: 'Actie',  cls: 'bg-accent-600 text-white hover:bg-accent-700' },
-    { key: 'wachten', label: 'Wachten', cls: 'bg-yellow-50 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 hover:bg-yellow-100 border border-yellow-200' },
-    { key: 'ooit',    label: 'Ooit',    cls: 'bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 hover:bg-purple-100 border border-purple-200' },
+    { key: 'wachten', label: 'Wachten', cls: 'bg-accent-50 dark:bg-accent-950/30 text-accent-700 dark:text-accent-400 hover:bg-accent-100 border border-accent-100' },
+    { key: 'ooit',    label: 'Ooit',    cls: 'bg-accent-50 dark:bg-accent-950/30 text-accent-600 dark:text-accent-400 hover:bg-accent-100 border border-accent-100' },
   ]
 
   return (
@@ -851,33 +837,34 @@ function LosseEindjesTab({ onProcessed }) {
           <p className="text-sm">Inbox nul! Alles verwerkt.</p>
         </div>
       )}
-      <div className="space-y-2">
+      <div className="space-y-0">
         {tasks.map(task => (
-          <div key={task.id}
-            className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl px-4 py-3.5">
-            <div className="flex items-center gap-2 mb-3">
+          <div key={task.id} className="group px-2 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+            <div className="flex items-center gap-2">
               {editing === task.id ? (
                 <>
                   <input autoFocus value={editTitle} onChange={e => setEditTitle(e.target.value)}
                     onKeyDown={e => { if (e.key === 'Enter') saveTitle(task.id); if (e.key === 'Escape') setEditing(null) }}
-                    lang="nl" className="flex-1 text-sm border border-gray-200 dark:border-gray-700 rounded-lg px-2.5 py-1 focus:outline-none bg-transparent text-gray-800 dark:text-gray-200" />
-                  <button onClick={() => saveTitle(task.id)} className="text-green-500 hover:text-green-700"><Check size={14} /></button>
-                  <button onClick={() => setEditing(null)} className="text-gray-400 hover:text-gray-600"><X size={14} /></button>
+                    lang="nl" className="flex-1 text-sm border border-gray-200 dark:border-gray-700 rounded-lg px-2 py-1 focus:outline-none bg-transparent text-gray-800 dark:text-gray-200" />
+                  <button onClick={() => saveTitle(task.id)} className="text-green-500 hover:text-green-700"><Check size={13} /></button>
+                  <button onClick={() => setEditing(null)} className="text-gray-400 hover:text-gray-600"><X size={13} /></button>
                 </>
               ) : (
                 <>
-                  <p className="flex-1 text-sm font-medium text-gray-900 dark:text-gray-100">{task.title}</p>
-                  <button onClick={() => { setEditing(task.id); setEditTitle(task.title) }}
-                    className="text-gray-300 hover:text-gray-500 transition-colors"><Pencil size={13} /></button>
-                  <button onClick={() => verwijder(task.id)}
-                    className="text-gray-300 hover:text-red-400 transition-colors"><Trash2 size={13} /></button>
+                  <p className="flex-1 text-sm text-gray-800 dark:text-gray-200 leading-snug">{task.title}</p>
+                  <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button onClick={() => { setEditing(task.id); setEditTitle(task.title) }}
+                      className="p-1 text-gray-300 hover:text-gray-500 transition-colors"><Pencil size={12} /></button>
+                    <button onClick={() => verwijder(task.id)}
+                      className="p-1 text-gray-300 hover:text-red-400 transition-colors"><Trash2 size={12} /></button>
+                  </div>
                 </>
               )}
             </div>
-            <div className="flex gap-2 flex-wrap">
+            <div className="flex gap-1.5 flex-wrap mt-1.5 pl-0">
               {BESTEMMINGEN.map(b => (
                 <button key={b.key} onClick={() => verplaats(task.id, b.key)}
-                  className={`text-xs px-3 py-1.5 rounded-lg font-medium transition-colors ${b.cls}`}>
+                  className={`text-[11px] px-2.5 py-1 rounded-md font-medium transition-colors ${b.cls}`}>
                   {b.label}
                 </button>
               ))}
@@ -927,28 +914,18 @@ function ContextGroupedView({ tasks, taskProps }) {
   )
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {groups.map(group => (
-        <div key={group.key ?? '_none'}
-          className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl p-5">
-          <div className="flex items-start justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center flex-shrink-0">
-                <group.icon size={16} className="text-gray-500 dark:text-gray-400" />
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">{group.label}</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                  {group.items.length} {group.items.length === 1 ? 'taak' : 'taken'}
-                </p>
-              </div>
+        <div key={group.key ?? '_none'}>
+          <div className="flex items-center justify-between py-1 mb-0.5">
+            <div className="flex items-center gap-2">
+              <group.icon size={13} className="text-gray-400 dark:text-gray-500" />
+              <span className="text-[11px] font-semibold uppercase tracking-widest text-gray-500 dark:text-gray-400">{group.label}</span>
+              <span className="text-[11px] text-gray-400">· {group.items.length}</span>
             </div>
-            <div className="text-right flex-shrink-0">
-              <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{fmtTijd(group.totalTime)}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Geschat</p>
-            </div>
+            <span className="text-[11px] text-gray-400 dark:text-gray-500">{fmtTijd(group.totalTime)}</span>
           </div>
-          <div className="space-y-2">
+          <div className="space-y-0">
             {group.items.map(task => (
               <TaskItem key={task.id} task={task} {...taskProps} />
             ))}
@@ -1180,7 +1157,7 @@ export default function Tasks() {
   function groupByCategory(list) {
     const cats = [
       { key: 'werk',  label: 'Werk',  dot: 'bg-accent-400',   hdr: 'text-accent-700 dark:text-accent-400' },
-      { key: 'privé', label: 'Privé', dot: 'bg-pink-400',     hdr: 'text-pink-700 dark:text-pink-400' },
+      { key: 'privé', label: 'Privé', dot: 'bg-accent-300',   hdr: 'text-accent-600 dark:text-accent-400' },
     ]
     const groups = cats.map(c => ({
       ...c,
@@ -1433,29 +1410,29 @@ export default function Tasks() {
 
           {/* All — grouped by category */}
           {tab === 'all' && !loading && (visibleTasks.length > 0 || visibleGoalActions.length > 0) && (
-            <div className="space-y-4">
+            <div className="space-y-3">
               {groupByCategory(visibleTasks).map(group => (
                 <div key={group.key}>
                   <button onClick={() => setCollapsed(c => ({ ...c, [group.key]: !c[group.key] }))}
-                    className="w-full flex items-center justify-between py-2 mb-2 text-left">
-                    <div className="flex items-center gap-2.5">
-                      <span className={`w-2 h-2 rounded-full ${group.dot}`} />
-                      <span className={`text-xs font-semibold uppercase tracking-wider ${group.hdr}`}>
+                    className="w-full flex items-center justify-between py-1 mb-0.5 text-left">
+                    <div className="flex items-center gap-2">
+                      <span className={`w-1.5 h-1.5 rounded-full ${group.dot}`} />
+                      <span className={`text-[11px] font-semibold uppercase tracking-widest ${group.hdr}`}>
                         {group.label}
                       </span>
+                      <span className="text-[11px] text-gray-400 dark:text-gray-500">· {group.tasks.length}</span>
                       {group.overdue > 0 && (
-                        <span className="text-xs bg-red-50 dark:bg-red-900/30 text-red-500 px-1.5 py-0.5 rounded-md font-medium">
+                        <span className="text-[10px] bg-red-50 dark:bg-red-900/30 text-red-500 px-1.5 py-0.5 rounded font-medium">
                           {group.overdue} verlopen
                         </span>
                       )}
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs text-gray-400 dark:text-gray-500">{group.tasks.length}</span>
-                      {collapsed[group.key] ? <ChevronRight size={14} className="text-gray-400" /> : <ChevronDown size={14} className="text-gray-400" />}
+                    <div className="flex items-center gap-1.5">
+                      {collapsed[group.key] ? <ChevronRight size={12} className="text-gray-300" /> : <ChevronDown size={12} className="text-gray-300" />}
                     </div>
                   </button>
                   {!collapsed[group.key] && (
-                    <div className="space-y-2">
+                    <div className="space-y-0">
                       {group.tasks.map(task => <TaskItem key={task.id} task={task} {...taskProps} />)}
                     </div>
                   )}

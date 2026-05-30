@@ -13,8 +13,8 @@ const STEPS = [
     label:    'Vorige week',
     title:    'Vorige week afsluiten',
     subtitle: 'Reflecteer op wat je hebt bereikt en wat niet.',
-    gradient: 'from-blue-500 to-blue-600',
-    text:     'text-blue-600 dark:text-blue-400',
+    gradient: 'from-accent-500 to-accent-600',
+    text:     'text-accent-600 dark:text-accent-400',
   },
   {
     id:       'projecten',
@@ -22,8 +22,8 @@ const STEPS = [
     label:    'Projecten',
     title:    'Projecten checken',
     subtitle: 'Heeft elk project een duidelijke volgende actie?',
-    gradient: 'from-purple-500 to-purple-600',
-    text:     'text-purple-600 dark:text-purple-400',
+    gradient: 'from-accent-400 to-accent-500',
+    text:     'text-accent-500 dark:text-accent-400',
   },
   {
     id:       'inbox',
@@ -230,7 +230,7 @@ export default function Review() {
         </div>
         <div className="h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
           <div
-            className="h-full bg-gradient-to-r from-blue-500 to-blue-600 rounded-full transition-all duration-500"
+            className="h-full bg-gradient-to-r from-accent-500 to-accent-600 rounded-full transition-all duration-500"
             style={{ width: `${progress}%` }}
           />
         </div>
