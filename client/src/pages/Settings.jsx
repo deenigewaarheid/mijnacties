@@ -158,38 +158,7 @@ export default function Settings() {
 
       <PasswordSection />
 
-      <div className="bg-white border border-gray-200 rounded-xl p-6 mb-4">
-        <div className="flex items-start justify-between">
-          <div>
-            <h2 className="font-semibold text-gray-800 mb-1">Gmail verbinden</h2>
-            <p className="text-sm text-gray-500">
-              Verbind je Gmail om automatisch mails te ontvangen via het "Analyzer" label.
-            </p>
-          </div>
-          {gmailConnected && <CheckCircle2 size={20} className="text-green-500 flex-shrink-0 mt-0.5" />}
-        </div>
-        <div className="mt-4 flex items-center gap-3 flex-wrap">
-          <button
-            onClick={handleGmailConnect}
-            disabled={loading || gmailConnected}
-            className="flex items-center gap-2 bg-accent-600 hover:bg-accent-700 disabled:opacity-50 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
-          >
-            <Mail size={14} />
-            {gmailConnected ? 'Gmail verbonden' : loading ? 'Bezig...' : 'Verbind Gmail'}
-          </button>
-          {gmailConnected && (
-            <button
-              onClick={handleSync}
-              disabled={syncing}
-              className="flex items-center gap-2 border border-gray-200 hover:border-gray-400 text-gray-600 hover:text-gray-900 px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
-            >
-              <Mail size={14} />
-              {syncing ? 'Synchroniseren...' : 'Sync nu'}
-            </button>
-          )}
-        </div>
-        {syncResult && <p className="mt-2 text-xs text-gray-500">{syncResult}</p>}
-      </div>
+
 
       <div className="bg-white border border-gray-200 rounded-xl p-6">
         <h2 className="font-semibold text-gray-800 mb-3">Sessie</h2>
