@@ -463,10 +463,10 @@ function TaskItem({ task, onToggle, onSubtaskToggle, onDelete, onUpdate, onSubta
             className={`p-1 rounded transition-colors flex-shrink-0 ${task.belangrijk ? 'text-amber-400' : 'opacity-0 group-hover:opacity-100 text-gray-300 hover:text-amber-400'}`}>
             <Star size={13} fill={task.belangrijk ? 'currentColor' : 'none'} />
           </button>
-          <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+          <div className="flex items-center gap-0.5">
             <button onClick={e => { e.stopPropagation(); onFocusToggle(task.id, !task.focus) }}
               title={task.focus ? 'Verwijder uit focus' : 'Voeg toe aan focus'}
-              className={`p-1 rounded transition-colors ${isFocused ? 'text-orange-400' : 'text-gray-300 hover:text-orange-400'}`}>
+              className={`p-1 rounded transition-colors ${isFocused ? 'text-orange-400' : 'opacity-0 group-hover:opacity-100 text-gray-300 hover:text-orange-400'}`}>
               <Target size={12} fill={isFocused ? 'currentColor' : 'none'} />
             </button>
             <button onClick={startEdit}
